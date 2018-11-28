@@ -1,7 +1,8 @@
 import mido
+import pygame
 
 pathToMidi = "./Fukashigi_no_Carte_Shinkai_Ver..mid"
-from note import Note
+from note_object import NoteObj
 
 screen_dims = (1760, 990)
 surface = pygame.display.set_mode(screen_dims)
@@ -10,12 +11,16 @@ mid = mido.MidiFile(pathToMidi)
 
 # parse MIDI file and spawn notes in actual time
 for msg in mid.play(meta_messages=True):
-    if ! msg.isMeta:
-        notes.append(Note(msg.channel, msg.type, msg.velocity, msg.time))
-    else
+    if msg.type == 'note_on':
+        attrs = vars(msg)
+        print(attrs)
+        notes.append(NoteObj(msg.type, msg.time, msg.channel, msg.note, msg.velocity))
+    elif msg.is_meta == False:
+        pass
+    else:
         print(msg)
 # draw     
 while true:
-    for noteObject in notes:
-        noteObject.draw()
+    for i in notes:
+        i.draw()
         
