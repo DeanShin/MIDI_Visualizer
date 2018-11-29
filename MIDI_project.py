@@ -15,7 +15,7 @@ i = 0
 #initialize note_tracks
 for note_track in note_tracks:
     note_tracks.append(NoteTrack(i))
-    i++
+    i += 1
 
 # parse MIDI file and spawn notes in actual time
 for msg in mid.play(meta_messages=True):
