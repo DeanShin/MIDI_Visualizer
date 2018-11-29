@@ -19,8 +19,9 @@ for msg in mid.play(meta_messages=True):
         pass
     else:
         print(msg)
-# draw     
+# draw & update
 while true:
     for i in notes:
         i.draw()
+        i.move()
         
