@@ -66,24 +66,40 @@ clock = pygame.time.Clock()
 
 mid = mido.MidiFile(pathToMidi)
 note_tracks = []
+i = 0
 j = 0
 
-timer = 0
+
+
+mido.merge_tracks(mid.tracks)
+
 start_time = time.time()
+iterable = iter(mid)
+msg = next(iterable)
+next_spawn_time = start_time 
 
 while j < 88:
     note_tracks.append(NoteTrack(j))
     j += 1
-    print("spawn" + str(j))
+    # print("spawn" + str(j))
 
 # parse MIDI file and spawn notes in actual time
 # for msg in mid.play(meta_messages=True): changed
-# draw & update notes
+# draw & update notes\
+
 while True:
     surface.fill(background)
-    for i in note_tracks:
-        i.update()
-
+    for note_track in note_tracks:
+        note_track.update()
+    try:
+         
+        while time.time() >= next_spawn_time:
+            next_spawn_time = next_spawn_time + msg.time 
+            msg = next(iterable)
+            print(next_spawn_time)
+            print(msg)  
+    except StopIteration:
+        break
     # # Save every frame
     # filename = "Snaps/%04d.png" % file_num
     # pygame.image.save(surface, filename)
