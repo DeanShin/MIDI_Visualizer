@@ -8,6 +8,7 @@ import sys
 pathToMidi = "./Fukashigi_no_Carte_Shinkai_Ver..mid"
 # from note_object import NoteObj
 import time
+from datetime import datetime, date
 
 class NoteTrack():
     #this file holds the note_track class
@@ -27,18 +28,17 @@ class NoteTrack():
             i.draw()
             i.move()
 
-
 class NoteObj():
     # this file holds the note class 
     def __init__(self, x, channel, velocity):
-        self.height = 5
-        self.width = 20 
-        self.x = x * 20
-        self.y = 0
+        self.height = 20
+        self.width = 20
+        self.x = x
+        self.y = 10
         self.change_x = 0
         self.change_y = 5
         self.color = (0,0,128)
-        self.thickness = 1
+        self.thickness = 0
         self.is_still_on = True
         
     def stop_growing(self):
@@ -53,6 +53,7 @@ class NoteObj():
             self.y += self.change_y
         
     def draw(self):
+        #print("drawing " + str(self.x) + " " + str(self.y))
         pygame.draw.rect(surface, self.color, (self.x, self.y, self.width, self.height), self.thickness)
 
 pygame.init()
@@ -61,7 +62,6 @@ surface_dims = (1760, 990)
 surface = pygame.display.set_mode(surface_dims)
 background = (255,255,255)
 FPS = 60
-
 clock = pygame.time.Clock()
 
 mid = mido.MidiFile(pathToMidi)
@@ -69,14 +69,13 @@ note_tracks = []
 i = 0
 j = 0
 
-
+start_time = time.time()
+next_spawn_time = start_time
 
 mido.merge_tracks(mid.tracks)
 
-start_time = time.time()
 iterable = iter(mid)
-msg = next(iterable)
-next_spawn_time = start_time 
+msg = next(iterable) 
 
 while j < 88:
     note_tracks.append(NoteTrack(j))
@@ -94,10 +93,16 @@ while True:
     try:
          
         while time.time() >= next_spawn_time:
-            next_spawn_time = next_spawn_time + msg.time 
             msg = next(iterable)
-            print(next_spawn_time)
+            next_spawn_time = next_spawn_time + msg.time 
+            today = datetime.fromtimestamp(next_spawn_time)
+            now = " ".join((str(today.date()),str(today.time())))
+            print(now)
             print(msg)  
+            if msg.type == 'note_on':
+                note_tracks[msg.note - 21].start_note(msg.channel, msg.velocity)
+            elif msg.type == 'note_off':
+                note_tracks[msg.note - 21].stop_note()
     except StopIteration:
         break
     # # Save every frame
@@ -113,6 +118,7 @@ while True:
     # file_num = file_num + 1
     pygame.display.flip()
     clock.tick(FPS)
+
         
 
 # for msg in mid:
@@ -120,7 +126,6 @@ while True:
 #     print(msg)
 
 #     if msg.type == 'note_on':
-#         print
 #         note_tracks[msg.note - 21].start_note(msg.channel, msg.velocity)
     
 #     elif msg.type == 'note_off':
