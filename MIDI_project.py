@@ -5,7 +5,7 @@ from pygame.locals import *
 # sys module for terminating process
 # Should replace end game with something like pygame.endgame or something
 import sys
-pathToMidi = "./Fukashigi_no_Carte_Shinkai_Ver..mid"
+pathToMidi = "./bumble_bee.mid"
 # from note_object import NoteObj
 import time
 from datetime import datetime, date
@@ -21,12 +21,14 @@ class NoteTrack():
         self.notes.append(NoteObj(self.x, channel, velocity))
         
     def stop_note(self):
-        self.notes[-1].stop_growing
+        self.notes[-1].stop_growing()
         
     def update(self):
-        for i in self.notes:
+        for n, i in enumerate(self.notes):
             i.draw()
             i.move()
+            if i.y >= surface_dims[1]:
+                del(self.notes[n])
 
 class NoteObj():
     # this file holds the note class 
@@ -93,16 +95,23 @@ while True:
     try:
          
         while time.time() >= next_spawn_time:
+            print(msg)
+            if msg.type == 'note_on' and msg.velocity != 0:
+                note_tracks[msg.note - 21].start_note(msg.channel, msg.velocity)
+            elif msg.type == 'note_on' and msg.velocity == 0:
+                note_tracks[msg.note - 21].stop_note()
+                print("ending")
+            else:
+                pass
+
+                
             msg = next(iterable)
             next_spawn_time = next_spawn_time + msg.time 
             today = datetime.fromtimestamp(next_spawn_time)
             now = " ".join((str(today.date()),str(today.time())))
             print(now)
-            print(msg)  
-            if msg.type == 'note_on':
-                note_tracks[msg.note - 21].start_note(msg.channel, msg.velocity)
-            elif msg.type == 'note_off':
-                note_tracks[msg.note - 21].stop_note()
+            
+
     except StopIteration:
         break
     # # Save every frame
