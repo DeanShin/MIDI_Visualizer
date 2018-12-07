@@ -16,6 +16,7 @@ class NoteTrack():
         self.x = number * 20
         self.y = 0
         self.notes = []
+        self.deleteNote = False
         
     def start_note(self, channel, velocity):
         self.notes.append(NoteObj(self.x, channel, velocity))
@@ -28,7 +29,12 @@ class NoteTrack():
             i.draw()
             i.move()
             if i.y >= surface_dims[1]:
-                del(self.notes[n])
+                self.deleteNote = True
+        if self.deleteNote:
+            self.deleteNote = False
+            del(self.notes[0])
+            
+                
 
 class NoteObj():
     # this file holds the note class 
@@ -98,9 +104,9 @@ while True:
             print(msg)
             if msg.type == 'note_on' and msg.velocity != 0:
                 note_tracks[msg.note - 21].start_note(msg.channel, msg.velocity)
+            # when msg.velocity == 0, that means that the note should be turned off.
             elif msg.type == 'note_on' and msg.velocity == 0:
                 note_tracks[msg.note - 21].stop_note()
-                print("ending")
             else:
                 pass
 
