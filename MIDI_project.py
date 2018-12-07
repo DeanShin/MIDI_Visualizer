@@ -5,7 +5,7 @@ from pygame.locals import *
 # sys module for terminating process
 # Should replace end game with something like pygame.endgame or something
 import sys
-pathToMidi = "./bumble_bee.mid"
+pathToMidi = "./From_our_Hearts_-_Timespinner_OST.mid"
 # from note_object import NoteObj
 import time
 from datetime import datetime, date
@@ -40,7 +40,7 @@ class NoteObj():
         self.change_x = 0
         self.change_y = 5
         self.color = (0,0,128)
-        self.thickness = 0
+        self.thickness = 2
         self.is_still_on = True
         
     def stop_growing(self):
