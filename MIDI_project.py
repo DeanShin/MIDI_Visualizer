@@ -10,26 +10,30 @@ pathToMidi = "./From_our_Hearts_-_Timespinner_OST.mid"
 import time
 from datetime import datetime, date
 
-class NoteTrack():
-    #this file holds the note_track class
+class NotePath():
+    #this file holds the note_path class
     def __init__(self, number):
         self.x = number * 20
         self.y = 0
         self.notes = []
         self.deleteNote = False
+        self.start_note = True
         
-    def start_note(self, channel, velocity):
-        self.notes.append(NoteObj(self.x, channel, velocity))
-        
-    def stop_note(self):
-        self.notes[-1].stop_growing()
+    def toggle_note(self, channel, velocity):
+        if self.start_note:
+            self.notes.append(NoteObj(self.x, channel, velocity))
+        else:
+            self.notes[-1].stop_growing()
+        self.start_note = not self.start_note
         
     def update(self):
         for n, i in enumerate(self.notes):
             i.draw()
             i.move()
+            #triggers deletion flag once note travels off screen
             if i.y >= surface_dims[1]:
                 self.deleteNote = True
+        #deletes note
         if self.deleteNote:
             self.deleteNote = False
             del(self.notes[0])
@@ -73,20 +77,20 @@ FPS = 60
 clock = pygame.time.Clock()
 
 mid = mido.MidiFile(pathToMidi)
-note_tracks = []
+note_paths = []
 i = 0
 j = 0
 
 start_time = time.time()
 next_spawn_time = start_time
 
-mido.merge_tracks(mid.tracks)
+#mido.merge_tracks(mid.tracks)
 
 iterable = iter(mid)
 msg = next(iterable) 
 
 while j < 88:
-    note_tracks.append(NoteTrack(j))
+    note_paths.append(NotePath(j))
     j += 1
     # print("spawn" + str(j))
 
@@ -95,21 +99,57 @@ while j < 88:
 # draw & update notes\
 
 while True:
+
+    #draw and move
+
     surface.fill(background)
-    for note_track in note_tracks:
-        note_track.update()
+    for note_path in note_paths:
+        note_path.update()
+        
     try:
-         
         while time.time() >= next_spawn_time:
             print(msg)
-            if msg.type == 'note_on' and msg.velocity != 0:
-                note_tracks[msg.note - 21].start_note(msg.channel, msg.velocity)
-            # when msg.velocity == 0, that means that the note should be turned off.
-            elif msg.type == 'note_on' and msg.velocity == 0:
-                note_tracks[msg.note - 21].stop_note()
-            else:
-                pass
+            if msg.type == 'note_on':
+                note_paths[msg.note - 21].toggle_note(msg.channel, msg.velocity)
 
+            elif msg.is_meta == False:
+                if msg.type == 'control_change':
+                    #sustain pedal
+                    if msg.control == 64:
+                        #if msg.value is 0-63, then pedal turns off. Otherwise, (64-127) turn on. 
+                        if msg.value < 64: 
+                            print("PEDAL OFF")
+                        else:
+                            print("PEDAL ON")
+                    else:
+                        print("Unimplemented control change" + "\n" + "\n")
+                elif msg.type == 'program_change':
+                    pass
+                else:
+                    print("Unimplemented message type" + "\n" + "\n")
+
+            else:
+                #is metaMessage
+                
+                #attrs = vars(msg)
+                #print(attrs)
+                if msg.type == 'text':
+                    pass
+                
+                elif msg.type == 'copyright':
+                    pass
+                
+                elif msg.type == 'set_tempo':
+                    pass
+                
+                elif msg.type == 'time_signature':
+                    pass
+                
+                elif msg.type == 'end_of_track':
+                    pass
+                
+                else:
+                    pass
                 
             msg = next(iterable)
             next_spawn_time = next_spawn_time + msg.time 
@@ -117,7 +157,6 @@ while True:
             now = " ".join((str(today.date()),str(today.time())))
             print(now)
             
-
     except StopIteration:
         break
     # # Save every frame
@@ -133,35 +172,3 @@ while True:
     # file_num = file_num + 1
     pygame.display.flip()
     clock.tick(FPS)
-
-        
-
-# for msg in mid:
-    
-#     print(msg)
-
-#     if msg.type == 'note_on':
-#         note_tracks[msg.note - 21].start_note(msg.channel, msg.velocity)
-    
-#     elif msg.type == 'note_off':
-#         note_tracks[msg.note - 21].stop_note()
-        
-#     elif msg.is_meta == False:
-#         pass
-#     else:
-#         #is metaMessage
-        
-#         #attrs = vars(msg)
-#         #print(attrs)
-#         if msg.type == 'text':
-#             pass
-#         elif msg.type == 'copyright':
-#             pass
-#         elif msg.type == 'set_tempo':
-#             pass
-#         elif msg.type == 'time_signature':
-#             pass
-#         elif msg.type == 'end_of_track':
-#             pass
-#         else:
-#             pass
