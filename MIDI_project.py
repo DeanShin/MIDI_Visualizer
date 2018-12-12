@@ -5,7 +5,7 @@ from pygame.locals import *
 # sys module for terminating process
 # Should replace end game with something like pygame.endgame or something
 import sys
-pathToMidi = "./From_our_Hearts_-_Timespinner_OST.mid"
+pathToMidi = "./bumble_bee (1).mid"
 # from note_object import NoteObj
 import time
 from datetime import datetime, date
@@ -50,7 +50,8 @@ class NoteObj():
         self.y = 10
         self.change_x = 0
         self.change_y = 5
-        self.color = (0,0,128)
+        #making note brighter as velocity increases
+        self.color = (255, velocity * 2, 255 - velocity * 2)
         self.thickness = 2
         self.is_still_on = True
         
@@ -65,13 +66,17 @@ class NoteObj():
         
     def draw(self):
         #print("drawing " + str(self.x) + " " + str(self.y))
-        pygame.draw.rect(surface, self.color, (self.x, self.y, self.width, self.height), self.thickness)
+        #innards
+        pygame.draw.rect(surface, self.color, (self.x, self.y, self.width, self.height), 0)
+        #shell
+        pygame.draw.rect(surface, (0, 0, 0), (self.x, self.y, self.width, self.height), self.thickness)
+        
 
 pygame.init()
 pygame.display.set_caption('MIDI Project')
 surface_dims = (1760, 990)
 surface = pygame.display.set_mode(surface_dims)
-background = (255,255,255)
+background = (0,0,0)
 FPS = 60
 clock = pygame.time.Clock()
 
