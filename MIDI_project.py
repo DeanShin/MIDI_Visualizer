@@ -27,23 +27,24 @@ class NotePath():
         self.start_note = not self.start_note
         
     def update(self):
-        for n, i in enumerate(self.notes):
-            i.draw()
-            i.move()
-            #triggers deletion flag once note travels off screen
-            if i.y >= surface_dims[1]:
-                self.deleteNote = True
-        #deletes note
         if self.deleteNote:
             self.deleteNote = False
             del(self.notes[0])
+        for n, i in enumerate(self.notes):
+            i.move()
+            i.draw()
+            #triggers deletion flag once note travels off screen
+            if i.y >= surface_dims[1]:
+                self.deleteNote = True
+        #delete note
+
             
                 
 
 class NoteObj():
     # this file holds the note class 
     def __init__(self, x, channel, velocity):
-        self.height = 20
+        self.height = 0
         self.width = 20
         self.x = x
         self.y = 10
@@ -57,8 +58,6 @@ class NoteObj():
         self.is_still_on = False
         
     def move(self):
-        self.x += self.change_x
-        
         if self.is_still_on:
             self.height += self.change_y
         else: 
@@ -102,16 +101,12 @@ while True:
 
     #draw and move
 
-    surface.fill(background)
-    for note_path in note_paths:
-        note_path.update()
-        
+
     try:
         while time.time() >= next_spawn_time:
             print(msg)
             if msg.type == 'note_on':
                 note_paths[msg.note - 21].toggle_note(msg.channel, msg.velocity)
-
             elif msg.is_meta == False:
                 if msg.type == 'control_change':
                     #sustain pedal
@@ -172,3 +167,8 @@ while True:
     # file_num = file_num + 1
     pygame.display.flip()
     clock.tick(FPS)
+
+    surface.fill(background)
+    for note_path in note_paths:
+        note_path.update()
+        
