@@ -2,13 +2,20 @@ import mido
 import pygame
 # Get key commands for input
 from pygame.locals import *
+from pygame import mixer
 # sys module for terminating process
 # Should replace end game with something like pygame.endgame or something
 import sys
 pathToMidi = "./bumble_bee (1).mid"
+pathToMP3 = "./"
 # from note_object import NoteObj
 import time
+import argparse
 from datetime import datetime, date
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--tbs", default="1", required=False, help="time before start")
+args = parser.parse_args()
 
 class NotePath():
     #this file holds the note_path class
@@ -85,6 +92,8 @@ note_paths = []
 i = 0
 j = 0
 
+time.sleep(args.tbs)
+
 start_time = time.time()
 next_spawn_time = start_time
 
@@ -98,15 +107,11 @@ while j < 88:
     j += 1
     # print("spawn" + str(j))
 
-# parse MIDI file and spawn notes in actual time
-# for msg in mid.play(meta_messages=True): changed
-# draw & update notes\
+mixer.init()
+mixer.music.load(pathToMP3)
+mixer.music.play()
 
 while True:
-
-    #draw and move
-
-
     try:
         while time.time() >= next_spawn_time:
             print(msg)
@@ -173,6 +178,8 @@ while True:
     pygame.display.flip()
     clock.tick(FPS)
 
+    #draw and move
+    
     surface.fill(background)
     for note_path in note_paths:
         note_path.update()
