@@ -111,9 +111,11 @@ mixer.init()
 mixer.music.load(pathToMP3)
 mixer.music.play()
 
+stop_reading = True
+
 while True:
     try:
-        while time.time() >= next_spawn_time:
+        while time.time() >= next_spawn_time and not stop_reading:
             print(msg)
             if msg.type == 'note_on':
                 note_paths[msg.note - 21].toggle_note(msg.channel, msg.velocity)
@@ -151,13 +153,16 @@ while True:
                     pass
                 
                 elif msg.type == 'end_of_track':
-                    pass
+                    stop_reading = True
                 
                 else:
-                    pass
+                    print("Unimplemented MetaMessage" + "\n \n")
                 
             msg = next(iterable)
             next_spawn_time = next_spawn_time + msg.time 
+            
+            #info printing
+            
             today = datetime.fromtimestamp(next_spawn_time)
             now = " ".join((str(today.date()),str(today.time())))
             print(now)
