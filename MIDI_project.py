@@ -6,8 +6,8 @@ from pygame import mixer
 # sys module for terminating process
 # Should replace end game with something like pygame.endgame or something
 import sys
-pathToMidi = "./bumble_bee (1).mid"
-pathToMP3 = "./"
+pathToMidi = "./From_our_Hearts_-_Timespinner_OST.mid"
+pathToMP3 = "./From_our_Hearts_-_Timespinner_OST.mp3"
 # from note_object import NoteObj
 import time
 import argparse
@@ -43,10 +43,7 @@ class NotePath():
             #triggers deletion flag once note travels off screen
             if i.y >= surface_dims[1]:
                 self.deleteNote = True
-        #delete note
-
-            
-                
+        #delete note           
 
 class NoteObj():
     # this file holds the note class 
@@ -54,8 +51,7 @@ class NoteObj():
         self.height = 0
         self.width = 20
         self.x = x
-        self.y = 10
-        self.change_x = 0
+        self.y = 0
         self.change_y = 5
         #making note brighter as velocity increases
         self.color = (255, velocity * 2, 255 - velocity * 2)
@@ -79,6 +75,7 @@ class NoteObj():
         pygame.draw.rect(surface, (0, 0, 0), (self.x, self.y, self.width, self.height), self.thickness)
         
 
+
 pygame.init()
 pygame.display.set_caption('MIDI Project')
 surface_dims = (1760, 990)
@@ -92,7 +89,7 @@ note_paths = []
 i = 0
 j = 0
 
-time.sleep(args.tbs)
+time.sleep(float(args.tbs))
 
 start_time = time.time()
 next_spawn_time = start_time
@@ -111,7 +108,7 @@ mixer.init()
 mixer.music.load(pathToMP3)
 mixer.music.play()
 
-stop_reading = True
+stop_reading = False
 
 while True:
     try:
