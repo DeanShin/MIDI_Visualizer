@@ -1,13 +1,14 @@
 import mido
 import pygame
+import pygame.midi
 # Get key commands for input
 from pygame.locals import *
 from pygame import mixer
 # sys module for terminating process
 # Should replace end game with something like pygame.endgame or something
 import sys
-pathToMidi = "./From_our_Hearts_-_Timespinner_OST.mid"
-pathToMP3 = "./From_our_Hearts_-_Timespinner_OST.mp3"
+pathToMidi = "./bumble_bee (1).mid"
+pathToMP3 = ""
 # from note_object import NoteObj
 import time
 import argparse
@@ -16,6 +17,7 @@ from datetime import datetime, date
 parser = argparse.ArgumentParser()
 parser.add_argument("--tbs", default="1", required=False, help="time before start")
 args = parser.parse_args()
+args = vars(args)
 
 class NotePath():
     #this file holds the note_path class
@@ -89,7 +91,11 @@ note_paths = []
 i = 0
 j = 0
 
-time.sleep(float(args.tbs))
+pygame.midi.init()
+player = pygame.midi.Output(0)
+player.set_instrument(0)
+
+time.sleep(float(args["tbs"]))
 
 start_time = time.time()
 next_spawn_time = start_time
@@ -104,9 +110,12 @@ while j < 88:
     j += 1
     # print("spawn" + str(j))
 
-mixer.init()
-mixer.music.load(pathToMP3)
-mixer.music.play()
+try: 
+    mixer.init()
+    mixer.music.load(pathToMP3)
+    mixer.music.play()
+except:
+    pass
 
 stop_reading = False
 
@@ -116,6 +125,8 @@ while True:
             print(msg)
             if msg.type == 'note_on':
                 note_paths[msg.note - 21].toggle_note(msg.channel, msg.velocity)
+                player.note_off(msg.note, msg.velocity, msg.channel)
+                player.note_on(msg.note, msg.velocity, msg.channel)
             elif msg.is_meta == False:
                 if msg.type == 'control_change':
                     #sustain pedal
