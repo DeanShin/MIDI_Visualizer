@@ -7,7 +7,7 @@ from pygame import mixer
 # sys module for terminating process
 # Should replace end game with something like pygame.endgame or something
 import sys
-pathToMidi = "./bumble_bee (1).mid"
+pathToMidi = "./From_our_Hearts_-_Timespinner_OST.mid"
 pathToMP3 = ""
 # from note_object import NoteObj
 import time
@@ -27,6 +27,7 @@ class NotePath():
         self.notes = []
         self.deleteNote = False
         self.start_note = True
+        self.piano_roll_obj = PianoRollObj(self.x, number)
         
     def toggle_note(self, channel, velocity):
         if self.start_note:
@@ -47,6 +48,8 @@ class NotePath():
                 self.deleteNote = True
         #delete note           
 
+        self.piano_roll_obj.draw()
+
 class NoteObj():
     # this file holds the note class 
     def __init__(self, x, channel, velocity):
@@ -58,13 +61,13 @@ class NoteObj():
         #making note brighter as velocity increases
         self.color = (255, velocity * 2, 255 - velocity * 2)
         self.thickness = 2
-        self.is_still_on = True
+        self.is_still_growing = True
         
     def stop_growing(self):
-        self.is_still_on = False
+        self.is_still_growing = False
         
     def move(self):
-        if self.is_still_on:
+        if self.is_still_growing:
             self.height += self.change_y
         else: 
             self.y += self.change_y
@@ -76,13 +79,44 @@ class NoteObj():
         #shell
         pygame.draw.rect(surface, (0, 0, 0), (self.x, self.y, self.width, self.height), self.thickness)
         
+class PianoRollObj():
+    def __init__(self, x, number):
 
+        self.is_white_note = False
+        self.width = 20
+        self.height = int(surface_dims[1] / 16)
+        self.x = x
+        self.y = int(surface_dims[1] * 7 / 8)
+
+
+
+        if number % 12 == 1 or number % 12 == 4 or number % 12 == 6 or number % 12 == 9 or number % 12 == 11:
+            #black note (A#/Bb , C#/Db , D#/Eb , F#/Gb , G#/Ab)
+            self.color = (0, 0, 0)
+        else:
+            #white note (A , B , C , D , E , F , G)
+            self.is_white_note = True
+            self.color = (255, 255, 255)
+            self.lower_width = self.width
+            self.lower_x = x
+            if number % 12 == 0 or number % 12 == 2 or number % 12 == 5 or number % 12 == 7 or number % 12 == 10:
+                self.lower_x -= 10
+                self.lower_width += 10
+            if number % 12 == 0 or number % 12 == 3 or number % 12 == 5 or number % 12 == 8 or number % 12 == 10:
+                self.lower_width += 10
+
+    def draw(self):
+        #upper part
+        pygame.draw.rect(surface, self.color, (self.x, self.y, self.width, self.height), 0)
+        #lower part for white notes
+        if self.is_white_note:
+            pygame.draw.rect(surface, self.color, (self.lower_x, self.y + self.height, self.lower_width, self.height), 0)
 
 pygame.init()
 pygame.display.set_caption('MIDI Project')
 surface_dims = (1760, 990)
 surface = pygame.display.set_mode(surface_dims)
-background = (0,0,0)
+background = (63,63,63)
 FPS = 60
 clock = pygame.time.Clock()
 
