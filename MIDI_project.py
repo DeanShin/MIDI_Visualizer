@@ -28,6 +28,7 @@ class NotePath():
         self.deleteNote = False
         self.start_note = True
         self.piano_roll_obj = PianoRollObj(self.x, number)
+        self.piano_y_pos = self.piano_roll_obj.y
         
     def toggle_note(self, channel, velocity):
         if self.start_note:
@@ -35,6 +36,9 @@ class NotePath():
         else:
             self.notes[-1].stop_growing()
         self.start_note = not self.start_note
+
+    def draw_piano(self):
+        self.piano_roll_obj.draw()
         
     def update(self):
         if self.deleteNote:
@@ -44,11 +48,11 @@ class NotePath():
             i.move()
             i.draw()
             #triggers deletion flag once note travels off screen
-            if i.y >= surface_dims[1]:
+            if i.y + i.height >= self.piano_y_pos:
+                i.start_shrinking()
+            if i.y >= self.piano_y_pos: #surface_dims[1]:
                 self.deleteNote = True
         #delete note           
-
-        self.piano_roll_obj.draw()
 
 class NoteObj():
     # this file holds the note class 
@@ -61,16 +65,22 @@ class NoteObj():
         #making note brighter as velocity increases
         self.color = (255, velocity * 2, 255 - velocity * 2)
         self.thickness = 2
-        self.is_still_growing = True
+        self.growing = True
+        self.shrinking = False
         
     def stop_growing(self):
-        self.is_still_growing = False
+        self.growing = False
+
+    def start_shrinking(self):
+        self.shrinking = True
         
     def move(self):
-        if self.is_still_growing:
+        if self.growing:
             self.height += self.change_y
         else: 
             self.y += self.change_y
+            if self.shrinking:
+                self.height -= self.change_y
         
     def draw(self):
         #print("drawing " + str(self.x) + " " + str(self.y))
@@ -100,17 +110,19 @@ class PianoRollObj():
             self.lower_width = self.width
             self.lower_x = x
             if number % 12 == 0 or number % 12 == 2 or number % 12 == 5 or number % 12 == 7 or number % 12 == 10:
+                #if there is a black note to the left,
                 self.lower_x -= 10
                 self.lower_width += 10
             if number % 12 == 0 or number % 12 == 3 or number % 12 == 5 or number % 12 == 8 or number % 12 == 10:
+                #if there is a black note to the right,
                 self.lower_width += 10
 
     def draw(self):
         #upper part
-        pygame.draw.rect(surface, self.color, (self.x, self.y, self.width, self.height), 0)
+        pygame.draw.rect(surface, self.color, (self.x + 1, self.y, self.width - 2, self.height), 0)
         #lower part for white notes
         if self.is_white_note:
-            pygame.draw.rect(surface, self.color, (self.lower_x, self.y + self.height, self.lower_width, self.height), 0)
+            pygame.draw.rect(surface, self.color, (self.lower_x + 1, self.y + self.height, self.lower_width - 2, self.height), 0)
 
 pygame.init()
 pygame.display.set_caption('MIDI Project')
@@ -230,4 +242,5 @@ while True:
     surface.fill(background)
     for note_path in note_paths:
         note_path.update()
-        
+    for note_path in note_paths:
+        note_path.draw_piano()
