@@ -7,12 +7,14 @@ from pygame import mixer
 # sys module for terminating process
 # Should replace end game with something like pygame.endgame or something
 import sys
-pathToMidi = "./From_our_Hearts_-_Timespinner_OST.mid"
+pathToMidi = "./SNK.mid"
 pathToMP3 = ""
 # from note_object import NoteObj
 import time
 import argparse
 from datetime import datetime, date
+
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--tbs", default="1", required=False, help="time before start")
@@ -21,18 +23,19 @@ args = vars(args)
 
 class NotePath():
     #this file holds the note_path class
-    def __init__(self, number):
-        self.x = number * 20
+    def __init__(self, note_id):
+        self.note_id = note_id
+        self.x = note_id * 20
         self.y = 0
         self.notes = []
         self.deleteNote = False
         self.start_note = True
-        self.piano_roll_obj = PianoRollObj(self.x, number)
+        self.piano_roll_obj = PianoRollObj(self.x, note_id)
         self.piano_y_pos = self.piano_roll_obj.y
         
     def toggle_note(self, channel, velocity):
         if self.start_note:
-            self.notes.append(NoteObj(self.x, channel, velocity))
+            self.notes.append(NoteObj(self.note_id, channel, velocity))
         else:
             self.notes[-1].stop_growing()
         self.start_note = not self.start_note
@@ -48,22 +51,28 @@ class NotePath():
             i.move()
             i.draw()
             #triggers deletion flag once note travels off screen
-            if i.y + i.height >= self.piano_y_pos:
+            if i.y + i.height >= self.piano_y_pos and not i.shrinking:
                 i.start_shrinking()
+                player.note_on(i.note_id + 21, i.velocity, i.channel)
             if i.y >= self.piano_y_pos: #surface_dims[1]:
                 self.deleteNote = True
+                player.note_off(i.note_id + 21, i.velocity, i.channel)
+
         #delete note           
 
 class NoteObj():
     # this file holds the note class 
-    def __init__(self, x, channel, velocity):
+    def __init__(self, note_id, channel, velocity):
+        self.note_id = note_id
+        self.velocity = velocity
+        self.channel = channel
         self.height = 0
         self.width = 20
-        self.x = x
+        self.x = note_id * 20
         self.y = 0
         self.change_y = 5
         #making note brighter as velocity increases
-        self.color = (255, velocity * 2, 255 - velocity * 2)
+        self.color = (255, lin_map_vel(velocity), 255 - lin_map_vel(velocity))
         self.thickness = 2
         self.growing = True
         self.shrinking = False
@@ -94,7 +103,7 @@ class PianoRollObj():
 
         self.is_white_note = False
         self.width = 20
-        self.height = int(surface_dims[1] / 16)
+        self.height = int(surface_dims[1] / 12)
         self.x = x
         self.y = int(surface_dims[1] * 7 / 8)
 
@@ -148,6 +157,29 @@ next_spawn_time = start_time
 
 #mido.merge_tracks(mid.tracks)
 
+list_of_vel = []
+
+for msg in mid:
+    if msg.type is 'note_on' and msg.velocity is not 0:
+        list_of_vel.append(msg.velocity)
+
+print(list_of_vel)
+#find minimum velocity
+min_vel = 127
+#find maximum velocity
+max_vel = 0
+
+for vel in list_of_vel:
+    if min_vel > vel:
+        min_vel = vel
+    if max_vel < vel:
+        max_vel = vel
+
+def lin_map_vel(velocity):
+    return (float(velocity - min_vel)/float(max_vel - min_vel)) * 255
+
+mid = mido.MidiFile(pathToMidi)
+
 iterable = iter(mid)
 msg = next(iterable) 
 
@@ -171,8 +203,6 @@ while True:
             print(msg)
             if msg.type == 'note_on':
                 note_paths[msg.note - 21].toggle_note(msg.channel, msg.velocity)
-                player.note_off(msg.note, msg.velocity, msg.channel)
-                player.note_on(msg.note, msg.velocity, msg.channel)
             elif msg.is_meta == False:
                 if msg.type == 'control_change':
                     #sustain pedal
