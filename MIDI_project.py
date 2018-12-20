@@ -21,7 +21,8 @@ pathToMP3 = ""
 parser = argparse.ArgumentParser()
 parser.add_argument("--tbs", default="1", required=False, help="time before start")
 parser.add_argument("--tbe", default="3", required=False, help="time before end")
-parser.add_argument("--title", default="N/A", required=False, help="")
+parser.add_argument("--spd", default="5", required=False, help="speed of notes")
+parser.add_argument("--ttl", default="N/A", required=False, help="")
 args = parser.parse_args()
 args = vars(args)
 
@@ -39,48 +40,55 @@ player.set_instrument(0)
 
 mid = mido.MidiFile(pathToMidi)
 note_paths = []
-i = 0
-j = 0
 
 min_vel = 127
 max_vel = 0
 
 #mido.merge_tracks(mid.tracks)
 
-list_of_vel = []
+def lin_map_vel(velocity):
+    return (float(velocity - min_vel)/float(max_vel - min_vel + 1)) * 255
 
+def draw_all():
+    surface.fill(background)
+    for note_path in note_paths:
+        note_path.update(pygame, surface, player)
+    pygame.draw.rect(surface, background, (0, int(surface_dims[1]*5/6), surface_dims[0], int(surface_dims[1]/6)), 0)
+    for note_path in note_paths:
+        note_path.draw_piano(pygame, surface)
+
+
+# find minimum and maximum values of velocity
+list_of_vel = []
 for msg in mid:
     if msg.type is 'note_on' and msg.velocity is not 0 and msg.type is not 'note_off':
         list_of_vel.append(msg.velocity)
-
-print(list_of_vel)
-
 for vel in list_of_vel:
     if min_vel > vel:
         min_vel = vel
     if max_vel < vel:
         max_vel = vel
-
 del(list_of_vel)
 
-def lin_map_vel(velocity):
-    return (float(velocity - min_vel)/float(max_vel - min_vel + 1)) * 255
+i = 0
+while i < 88:
+    note_paths.append(NotePath(i, surface_dims[1], int(args["spd"])))
+    i += 1
+del(i)
 
+# INTRO
 
-time.sleep(float(args["tbs"]))
-
-start_time = time.time()
-next_msg_time = start_time
+next_msg_time = time.time() + float(args["tbs"])
+while time.time() < next_msg_time:
+    pygame.display.flip()
+    clock.tick(FPS)
+    draw_all()
 
 mid = mido.MidiFile(pathToMidi)
-
 iterable = iter(mid)
 msg = next(iterable) 
 
-while j < 88:
-    note_paths.append(NotePath(j, surface_dims[1]))
-    j += 1
-    # print("spawn" + str(j))
+# PLAY
 
 try: 
     mixer.init()
@@ -89,6 +97,7 @@ try:
 except:
     pass
 
+next_msg_time = time.time()
 stop_reading = False
 started_ending = False
 
@@ -152,6 +161,7 @@ while True:
         #when there are no more messages, trigger a countdown of length tbe\
             next_msg_time = next_msg_time + int(args["tbe"])
             started_ending = True
+
     finally:
         # # Save every frame
         # filename = "Snaps/%04d.png" % file_num
@@ -169,13 +179,11 @@ while True:
 
         #draw and move
         
-        surface.fill(background)
-        for note_path in note_paths:
-            note_path.update(pygame, surface, player)
-        for note_path in note_paths:
-            note_path.draw_piano(pygame, surface)
+        draw_all()
 
         if started_ending:
             if time.time() >= next_msg_time:
                 print("END")
-                break       
+                break
+
+# OUTRO

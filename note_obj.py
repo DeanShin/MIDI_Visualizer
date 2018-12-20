@@ -1,8 +1,8 @@
-class NoteObj():
+# this file holds the NoteObj class
 
-    # this file holds the NoteObj class
+class NoteObj():
     
-    def __init__(self, note_id, channel, velocity, lin_map_vel):
+    def __init__(self, note_id, channel, velocity, lin_map_vel, spd):
         self.note_id = note_id
         self.velocity = velocity
         self.channel = channel
@@ -10,24 +10,18 @@ class NoteObj():
         self.width = 20
         self.x = note_id * 20
         self.y = 0
-        self.change_y = 5
+        self.change_y = spd
         #making note color change as velocity increases
         self.color = (255, lin_map_vel, 255 - lin_map_vel)
         self.thickness = 2
         self.growing = True
         self.shrinking = False
-        
-
 
     def stop_growing(self):
         self.growing = False
 
-
-
     def start_shrinking(self):
         self.shrinking = True
-
-
 
     def move(self):
         if self.growing:
@@ -37,8 +31,6 @@ class NoteObj():
             if self.shrinking:
                 self.height -= self.change_y
 
-    
-        
     def draw(self, pygame, surface):
         #print("drawing " + str(self.x) + " " + str(self.y))
         #innards
