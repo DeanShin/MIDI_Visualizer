@@ -25,6 +25,7 @@ parser.add_argument("--tbs", default="1", required=False, help="time before star
 parser.add_argument("--tbe", default="3", required=False, help="time before end")
 parser.add_argument("--spd", default="5", required=False, help="speed of notes")
 parser.add_argument("--title", default="N/A", required=False, help="title of piece")
+parser.add_argument("--rcd", default="N", required=False, help="recording, inputs Y/N")
 args = parser.parse_args()
 args = vars(args)
 
@@ -87,6 +88,12 @@ while i < 88:
     note_paths.append(NotePath(i, surface_dims[1], int(args["spd"])))
     i += 1
 del(i)
+
+if args["rcd"] is "T":
+    pass
+
+
+
 
 # INTRO
 
