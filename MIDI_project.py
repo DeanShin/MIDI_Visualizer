@@ -20,12 +20,12 @@ pathToMidi = "./SNK.mid"
 pathToMP3 = ""
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--midiname", default=str(pathToMidi), required=False, help="path to midi file")
-parser.add_argument("--tbs", default="1", required=False, help="time before start")
-parser.add_argument("--tbe", default="3", required=False, help="time before end")
-parser.add_argument("--spd", default="5", required=False, help="speed of notes")
-parser.add_argument("--title", default="N/A", required=False, help="title of piece")
-parser.add_argument("--rcd", default="N", required=False, help="recording, inputs Y/N")
+parser.add_argument("--midiname", default=str(pathToMidi), required=False, help="str  path to midi file")
+parser.add_argument("--tbs", default="1", required=False, help="float  time before start")
+parser.add_argument("--tbe", default="3", required=False, help="float  time before end")
+parser.add_argument("--spd", default="5", required=False, help="int  speed of notes")
+parser.add_argument("--title", default="N/A", required=False, help="str  title of piece")
+parser.add_argument("--rcd", default="N", required=False, help="bool  recording, inputs Y/N")
 args = parser.parse_args()
 args = vars(args)
 
@@ -33,7 +33,6 @@ if args["rcd"] is "Y":
     is_recording = True
 else:
     is_recording = False
-
 pathToMidi = args["midiname"]
 
 pygame.init()
@@ -55,6 +54,18 @@ note_paths = []
 min_vel = 127
 max_vel = 0
 
+# find minimum and maximum values of velocity
+list_of_vel = []
+for msg in mid:
+    if msg.type is 'note_on' and msg.velocity is not 0 and msg.type is not 'note_off':
+        list_of_vel.append(msg.velocity)
+for vel in list_of_vel:
+    if min_vel > vel:
+        min_vel = vel
+    if max_vel < vel:
+        max_vel = vel
+del(list_of_vel)
+
 if is_recording:
     file_num = 0
     try:
@@ -74,19 +85,6 @@ def draw_all():
     pygame.draw.rect(surface, background, (0, int(surface_dims[1]*5/6), surface_dims[0], int(surface_dims[1]/6)), 0)
     for note_path in note_paths:
         note_path.draw_piano(pygame, surface)
-
-
-# find minimum and maximum values of velocity
-list_of_vel = []
-for msg in mid:
-    if msg.type is 'note_on' and msg.velocity is not 0 and msg.type is not 'note_off':
-        list_of_vel.append(msg.velocity)
-for vel in list_of_vel:
-    if min_vel > vel:
-        min_vel = vel
-    if max_vel < vel:
-        max_vel = vel
-del(list_of_vel)
 
 i = 0
 while i < 88:
@@ -176,9 +174,9 @@ while True:
 
             #info printing
 
-            today = datetime.fromtimestamp(next_msg_time)
-            now = " ".join((str(today.date()),str(today.time())))
-            print(now)
+            #today = datetime.fromtimestamp(next_msg_time)
+            #now = " ".join((str(today.date()),str(today.time())))
+            #print(now)
 
     except StopIteration:
         #when there are no more messages, trigger a countdown of length tbe\
