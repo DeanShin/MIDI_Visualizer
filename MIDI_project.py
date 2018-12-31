@@ -87,7 +87,7 @@ def draw_all():
         note_path.draw_piano(pygame, surface)
 
 i = 0
-while i < 88:
+while i < 89:
     note_paths.append(NotePath(i, surface_dims[1], int(args["spd"])))
     i += 1
 del(i)
