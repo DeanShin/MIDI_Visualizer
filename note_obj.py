@@ -1,8 +1,8 @@
 # this file holds the NoteObj class
 
 class NoteObj():
-    
-    def __init__(self, note_id, channel, velocity, lin_map_vel, spd):
+
+    def __init__(self, note_id, channel, velocity, lin_map_vel, spd, is_sustain):
         self.note_id = note_id
         self.velocity = velocity
         self.channel = channel
@@ -16,6 +16,11 @@ class NoteObj():
         self.thickness = 2
         self.growing = True
         self.shrinking = False
+        self.is_sustain = True
+        if is_sustain is True:
+            self.width = 1760
+            self.x = 0
+            self.color = (47, 47, 47)
 
     def stop_growing(self):
         self.growing = False
@@ -26,7 +31,7 @@ class NoteObj():
     def move(self):
         if self.growing:
             self.height += self.change_y
-        else: 
+        else:
             self.y += self.change_y
             if self.shrinking:
                 self.height -= self.change_y
@@ -37,3 +42,5 @@ class NoteObj():
         pygame.draw.rect(surface, self.color, (self.x, self.y, self.width, self.height), 0)
         #shell
         pygame.draw.rect(surface, (0, 0, 0), (self.x, self.y, self.width, self.height), self.thickness)
+        #if self.is_sustain is True:
+        
