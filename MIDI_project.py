@@ -40,7 +40,7 @@ pygame.display.set_caption('MIDI Project')
 surface_dims = (1760, 990)
 surface = pygame.display.set_mode(surface_dims)
 background = (63,63,63)
-FPS = 60
+FPS = 60.0
 frame_length = 1/FPS
 clock = pygame.time.Clock()
 
@@ -88,7 +88,8 @@ def draw_all():
 
 i = 0
 while i < 89:
-    note_paths.append(NotePath(i, surface_dims[1], int(args["spd"])))
+    #i - 1 in NotePath() accounts for NotePath 0 being the path for the pedal
+    note_paths.append(NotePath(i - 1, surface_dims[1], int(args["spd"])))
     i += 1
 del(i)
 
@@ -127,12 +128,15 @@ while True:
         while current_time >= next_msg_time and not stop_reading:
             print(msg)
             if msg.type == 'note_on' or msg.type == 'note_off':
-                note_paths[msg.note - 21].toggle_note(msg.channel, msg.velocity, lin_map_vel(msg.velocity))
+                #A0 (note_path[1]) is msg.note == 21
+                note_paths[msg.note + 1 - 21].toggle_note(msg.channel, msg.velocity, lin_map_vel(msg.velocity))
             elif msg.is_meta == False:
                 if msg.type == 'control_change':
                     #sustain pedal
                     if msg.control == 64:
-                        #if msg.value is 0-63, then pedal turns off. Otherwise, (64-127) turn on.
+                        #if msg.value is 0-63, then pedal (note_path[0]) turns off. 
+                        #Otherwise, (64-127) turn on.
+                        note_paths[0].toggle_note(0, 0, 0)
                         if msg.value < 64:
                             print("PEDAL OFF")
                         else:

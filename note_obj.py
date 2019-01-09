@@ -16,7 +16,8 @@ class NoteObj():
         self.thickness = 2
         self.growing = True
         self.shrinking = False
-        if is_sustain:
+        self.is_sustain = True
+        if is_sustain is True:
             self.width = 1760
             self.x = 0
             self.color = (47, 47, 47)
@@ -41,3 +42,5 @@ class NoteObj():
         pygame.draw.rect(surface, self.color, (self.x, self.y, self.width, self.height), 0)
         #shell
         pygame.draw.rect(surface, (0, 0, 0), (self.x, self.y, self.width, self.height), self.thickness)
+        #if self.is_sustain is True:
+        

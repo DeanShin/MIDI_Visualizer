@@ -7,18 +7,18 @@ class NotePath():
 
     def __init__(self, note_id, screen_y, spd):
         self.is_sustain = False
-        if note_id < 88:
-            self.x = note_id * 20
-            self.piano_roll_obj = PianoRollObj(self.x, note_id, screen_y)
-        elif note_id is 88:
+        self.piano_y_pos = int(screen_y * 5 / 6)
+        if note_id is -1:
             self.x = 0
             self.is_sustain = True
+        else:
+            self.x = note_id * 20
+            self.piano_roll_obj = PianoRollObj(self.x, note_id, screen_y)
         self.notes = []
         self.deleteNote = False
         self.start_note = True
         self.note_id = note_id
         self.y = 0
-        self.piano_y_pos = self.piano_roll_obj.y
         self.spd = spd
 
 
@@ -30,7 +30,8 @@ class NotePath():
         self.start_note = not self.start_note
 
     def draw_piano(self, pygame, surface):
-        self.piano_roll_obj.draw(pygame, surface)
+        if not self.is_sustain:
+            self.piano_roll_obj.draw(pygame, surface)
 
     def update(self, pygame, surface, player):
         if self.deleteNote:
