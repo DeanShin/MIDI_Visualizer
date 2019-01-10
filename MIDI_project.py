@@ -16,15 +16,18 @@ from datetime import datetime, date
 from note_path import NotePath
 from note_obj import NoteObj
 
-pathToMidi = "./SNK.mid"
+pathToMidi = "./examples/midifiles/SNK.mid"
 pathToMP3 = ""
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--midiname", default=str(pathToMidi), required=False, help="str  path to midi file")
+parser.add_argument("--filepath", default=str(pathToMidi), required=False, help="str  path to midi file")
+parser.add_argument("--title", default="Intuition and Insight", required=False, help="str  title of piece")
+parser.add_argument("--subtitle", default="Sen no Kiseki IV", required=False, help="str  subtitle")
+parser.add_argument("--composer", default="Mitsuo Singa", required=False, help="str  composer")
+parser.add_argument("--arranger", default="Me", required=False, help="str  arranger")
 parser.add_argument("--tbs", default="1", required=False, help="float  time before start")
 parser.add_argument("--tbe", default="3", required=False, help="float  time before end")
 parser.add_argument("--spd", default="5", required=False, help="int  speed of notes")
-parser.add_argument("--title", default="N/A", required=False, help="str  title of piece")
 parser.add_argument("--rcd", default="N", required=False, help="bool  recording, inputs Y/N")
 args = parser.parse_args()
 args = vars(args)
@@ -33,7 +36,7 @@ if args["rcd"] is "Y":
     is_recording = True
 else:
     is_recording = False
-pathToMidi = args["midiname"]
+pathToMidi = args["filepath"]
 
 pygame.init()
 pygame.display.set_caption('MIDI Project')
@@ -94,6 +97,12 @@ while i < 89:
 del(i)
 
 # INTRO
+font_T = pygame.font.Font("resources/fonts/SoukouMincho.ttf", 100)
+text_T = font_T.render(args["title"], True, (255, 255, 255))
+font_t = pygame.font.Font("resources/fonts/SoukouMincho.ttf", 70)
+text_t = font_t.render(args["subtitle"], True, (255, 255, 255))
+font_lilt = pygame.font.Font("resources/fonts/SoukouMincho.ttf", 40)
+text_lilt = font_lilt.render("Composed by " + args["composer"] + ", Arranged by " + args["arranger"] + ".", True, (255,255,255))
 
 current_time = 0
 next_msg_time = float(args["tbs"])
@@ -101,8 +110,14 @@ while current_time < next_msg_time:
     pygame.display.flip()
     clock.tick(FPS)
     draw_all()
+    surface.blit(text_T, (surface_dims[0]/2 - text_T.get_width() // 2, surface_dims[1]/2 - text_T.get_height() // 2 - 70))
+    surface.blit(text_t, (surface_dims[0]/2 - text_t.get_width() // 2, surface_dims[1]/2 - text_t.get_height() // 2))
+    surface.blit(text_lilt, (surface_dims[0]/2 - text_lilt.get_width() // 2, surface_dims[1]/2 - text_lilt.get_height() // 2 + 55))
     current_time = current_time + frame_length
-    print(current_time)
+    #print(current_time)
+
+del text_T
+del text_t
 
 mid = mido.MidiFile(pathToMidi)
 iterable = iter(mid)
