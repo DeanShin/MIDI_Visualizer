@@ -36,11 +36,11 @@ class NoteObj():
             if self.shrinking:
                 self.height -= self.change_y
 
-    def draw(self, pygame, surface):
+    def draw(self, pygame, window):
         #print("drawing " + str(self.x) + " " + str(self.y))
         #innards
-        pygame.draw.rect(surface, self.color, (self.x, self.y, self.width, self.height), 0)
+        pygame.draw.rect(window, self.color, (self.x, self.y, self.width, self.height), 0)
         #shell
-        pygame.draw.rect(surface, (0, 0, 0), (self.x, self.y, self.width, self.height), self.thickness)
+        pygame.draw.rect(window, (0, 0, 0), (self.x, self.y, self.width, self.height), self.thickness)
         #if self.is_sustain is True:
         

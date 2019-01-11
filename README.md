@@ -2,7 +2,7 @@
 ## ![Example Usage](examples/videos/SNK_vid.gif)
 ## Inputs
 ```
-python ./MIDI_project.py --filepath ./test.mid --title "My Song" --subtitle "Is The Best" --composer "Bachobel" --arranger "Copyright Infringing Guy" --tbs 1.2 --tbe 1.4 --spd 5 --rcd Y
+python ./MIDI_project.py --filepath ./test.mid --title My Song --subtitle The Best --composer Bachobel --arranger Copyright Infringing Guy --tbs 1.2 --tbe 1.4 --spd 5 --rcd Y
 ```
 In command line, MIDI_Visualizer uses a parser to parse commands from the user.
 

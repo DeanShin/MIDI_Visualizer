@@ -40,8 +40,8 @@ pathToMidi = args["filepath"]
 
 pygame.init()
 pygame.display.set_caption('MIDI Project')
-surface_dims = (1760, 990)
-surface = pygame.display.set_mode(surface_dims)
+window_dims = (1760, 990)
+window = pygame.display.set_mode(window_dims)
 background = (63,63,63)
 FPS = 60.0
 frame_length = 1/FPS
@@ -82,27 +82,50 @@ def lin_map_vel(velocity):
     return (float(velocity - min_vel)/float(max_vel - min_vel + 1)) * 255
 
 def draw_all():
-    surface.fill(background)
+    window.fill(background)
     for note_path in note_paths:
-        note_path.update(pygame, surface, player)
-    pygame.draw.rect(surface, background, (0, int(surface_dims[1]*5/6), surface_dims[0], int(surface_dims[1]/6)), 0)
+        note_path.update(pygame, window, player)
+    pygame.draw.rect(window, background, (0, int(window_dims[1]*5/6), window_dims[0], int(window_dims[1]/6)), 0)
     for note_path in note_paths:
-        note_path.draw_piano(pygame, surface)
+        note_path.draw_piano(pygame, window)
+
+def record():
+    filename = "Snaps/%04d.png" % file_num
+    pygame.image.save(window, filename)
+    file_num = file_num + 1
+
+
 
 i = 0
 while i < 89:
     #i - 1 in NotePath() accounts for NotePath 0 being the path for the pedal
-    note_paths.append(NotePath(i - 1, surface_dims[1], int(args["spd"])))
+    note_paths.append(NotePath(i - 1, window_dims[1], int(args["spd"])))
     i += 1
 del(i)
 
 # INTRO
-font_T = pygame.font.Font("resources/fonts/SoukouMincho.ttf", 100)
-text_T = font_T.render(args["title"], True, (255, 255, 255))
-font_t = pygame.font.Font("resources/fonts/SoukouMincho.ttf", 70)
-text_t = font_t.render(args["subtitle"], True, (255, 255, 255))
-font_lilt = pygame.font.Font("resources/fonts/SoukouMincho.ttf", 40)
-text_lilt = font_lilt.render("Composed by " + args["composer"] + ", Arranged by " + args["arranger"] + ".", True, (255,255,255))
+font_big = pygame.font.Font("resources/fonts/SoukouMincho.ttf", 100)
+text_big = font_big.render(args["title"], True, (255, 255, 255))
+font_med = pygame.font.Font("resources/fonts/SoukouMincho.ttf", 70)
+text_med = font_med.render(args["subtitle"], True, (255, 255, 255))
+font_sml = pygame.font.Font("resources/fonts/SoukouMincho.ttf", 40)
+text_sml = font_sml.render("Composed by " + args["composer"] + ", Arranged by " + args["arranger"] + ".", True, (255,255,255))
+
+text_surface=pygame.Surface((window_dims[0], window_dims[1] - 400))
+
+#FADE IN
+alpha = 0
+while alpha < 256:
+    pygame.display.flip()
+    clock.tick(FPS)
+    draw_all()
+    text_surface.fill((background[0], background[1], background[2], 0))
+    text_surface.blit(text_big, (window_dims[0]/2 - text_big.get_width() // 2, window_dims[1]/2 - text_big.get_height() // 2 - 70))
+    text_surface.blit(text_med, (window_dims[0]/2 - text_med.get_width() // 2, window_dims[1]/2 - text_med.get_height() // 2))
+    text_surface.blit(text_sml, (window_dims[0]/2 - text_sml.get_width() // 2, window_dims[1]/2 - text_sml.get_height() // 2 + 55))
+    text_surface.set_alpha(alpha)
+    window.blit(text_surface, (0,0))
+    alpha = alpha + 2
 
 current_time = 0
 next_msg_time = float(args["tbs"])
@@ -110,14 +133,31 @@ while current_time < next_msg_time:
     pygame.display.flip()
     clock.tick(FPS)
     draw_all()
-    surface.blit(text_T, (surface_dims[0]/2 - text_T.get_width() // 2, surface_dims[1]/2 - text_T.get_height() // 2 - 70))
-    surface.blit(text_t, (surface_dims[0]/2 - text_t.get_width() // 2, surface_dims[1]/2 - text_t.get_height() // 2))
-    surface.blit(text_lilt, (surface_dims[0]/2 - text_lilt.get_width() // 2, surface_dims[1]/2 - text_lilt.get_height() // 2 + 55))
+    window.blit(text_big, (window_dims[0]/2 - text_big.get_width() // 2, window_dims[1]/2 - text_big.get_height() // 2 - 70))
+    window.blit(text_med, (window_dims[0]/2 - text_med.get_width() // 2, window_dims[1]/2 - text_med.get_height() // 2))
+    window.blit(text_sml, (window_dims[0]/2 - text_sml.get_width() // 2, window_dims[1]/2 - text_sml.get_height() // 2 + 55))
     current_time = current_time + frame_length
+    if is_recording:
+        record()
     #print(current_time)
 
-del text_T
-del text_t
+alpha = 255
+while alpha > 0:
+    pygame.display.flip()
+    clock.tick(FPS)
+    draw_all()
+    text_surface.fill((background[0], background[1], background[2], 0))
+    text_surface.blit(text_big, (window_dims[0]/2 - text_big.get_width() // 2, window_dims[1]/2 - text_big.get_height() // 2 - 70))
+    text_surface.blit(text_med, (window_dims[0]/2 - text_med.get_width() // 2, window_dims[1]/2 - text_med.get_height() // 2))
+    text_surface.blit(text_sml, (window_dims[0]/2 - text_sml.get_width() // 2, window_dims[1]/2 - text_sml.get_height() // 2 + 55))
+    text_surface.set_alpha(alpha)
+    window.blit(text_surface, (0,0))
+    alpha = alpha - 2
+
+del text_big
+del text_med
+del text_sml
+del text_surface
 
 mid = mido.MidiFile(pathToMidi)
 iterable = iter(mid)
@@ -205,9 +245,7 @@ while True:
     finally:
         # Save every frame
         if is_recording:
-            filename = "Snaps/%04d.png" % file_num
-            pygame.image.save(surface, filename)
-            file_num = file_num + 1
+            record()
 
         # Process Events
         for e in pygame.event.get():

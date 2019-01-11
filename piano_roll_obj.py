@@ -35,9 +35,9 @@ class PianoRollObj():
         else:
             self.color = (0, 0, 0)
 
-    def draw(self, pygame, surface):
+    def draw(self, pygame, window):
         #upper part
-        pygame.draw.rect(surface, self.color, (self.x + 1, self.y, self.width - 2, self.height), 0)
+        pygame.draw.rect(window, self.color, (self.x + 1, self.y, self.width - 2, self.height), 0)
         #lower part for white notes
         if self.is_white_note:
-            pygame.draw.rect(surface, self.color, (self.lower_x + 1, self.y + self.height, self.lower_width - 2, self.height), 0)
+            pygame.draw.rect(window, self.color, (self.lower_x + 1, self.y + self.height, self.lower_width - 2, self.height), 0)

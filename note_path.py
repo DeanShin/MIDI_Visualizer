@@ -29,17 +29,17 @@ class NotePath():
             self.notes[-1].stop_growing()
         self.start_note = not self.start_note
 
-    def draw_piano(self, pygame, surface):
+    def draw_piano(self, pygame, window):
         if not self.is_sustain:
-            self.piano_roll_obj.draw(pygame, surface)
+            self.piano_roll_obj.draw(pygame, window)
 
-    def update(self, pygame, surface, player):
+    def update(self, pygame, window, player):
         if self.deleteNote:
             self.deleteNote = False
             del(self.notes[0])
         for n, i in enumerate(self.notes):
             i.move()
-            i.draw(pygame, surface)
+            i.draw(pygame, window)
             # plays note when note collides with piano roll
             if i.y + i.height >= self.piano_y_pos and not i.shrinking:
                 i.start_shrinking()
