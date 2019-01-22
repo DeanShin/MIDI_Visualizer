@@ -2,7 +2,7 @@
 
 class NoteObj():
 
-    def __init__(self, note_id, channel, velocity, lin_map_vel, spd, is_sustain):
+    def __init__(self, note_id, channel, velocity, lin_map_vel, spd, is_sustain, col1, col2):
         self.note_id = note_id
         self.velocity = velocity
         self.channel = channel
@@ -11,8 +11,12 @@ class NoteObj():
         self.x = note_id * 20
         self.y = 0
         self.change_y = spd
-        #making note color change as velocity increases
-        self.color = (255, lin_map_vel, 255 - lin_map_vel)
+        #making note color change as velocity 
+        #if col1 is yellow (255, 255, 0) and col2 is blue (0, 0, 255)
+        #then equation becomes (col1[0] + lin_map_vel * (col2[0] - col1[0]))
+        self.color = (int(col1[0] + lin_map_vel * (col2[0] - col1[0])), \
+        int(col1[1] + lin_map_vel * (col2[1] - col1[1])), \
+        int(col1[2] + lin_map_vel * (col2[2] - col1[2])))
         self.thickness = 2
         self.growing = True
         self.shrinking = False

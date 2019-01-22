@@ -30,6 +30,8 @@ parser.add_argument("--tbs", default="1", required=False, help="float  time befo
 parser.add_argument("--tbe", default="3", required=False, help="float  time before end")
 parser.add_argument("--spd", default="5", required=False, help="int  speed of notes")
 parser.add_argument("--rcd", default="N", required=False, help="bool  recording, inputs Y/N")
+parser.add_argument("--col1", default="#FFFFFF", required=False, help="color (hex) of lowest velocity notes")
+parser.add_argument("--col2", default="#000000", required=False, help="color (hex) of highest velocity notes")
 args = parser.parse_args()
 args = vars(args)
 
@@ -61,7 +63,6 @@ note_paths = []
 
 min_vel = 127
 max_vel = 0
-
 # find minimum and maximum values of velocity
 list_of_vel = []
 for msg in mid:
@@ -83,8 +84,13 @@ if is_recording:
 
 #mido.merge_tracks(mid.tracks)
 
+def hex_to_rgb(value):
+    value = value.lstrip('#')
+    lv = len(value)
+    return tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
+
 def lin_map_vel(velocity):
-    return (float(velocity - min_vel)/float(max_vel - min_vel + 1)) * 255
+    return (float(velocity - min_vel)/float(max_vel - min_vel + 1))
 
 def draw_all():
     window.fill(background)
@@ -106,17 +112,18 @@ def process_audio():
 
 #not working at the moment: need to download fluidsynth, which requires the download of vcpkg, which is blocked
 #by windows
-#process_audio()
+#process_audio()    
 
-def do_everything():
-    
-
+col1 = hex_to_rgb(args["col1"])
+col2 = hex_to_rgb(args["col2"])
 i = 0
 while i < 89:
     #i - 1 in NotePath() accounts for NotePath 0 being the path for the pedal
-    note_paths.append(NotePath(i - 1, window_dims[1], int(args["spd"])))
+    note_paths.append(NotePath(i - 1, window_dims[1], int(args["spd"]), col1, col2))
     i += 1
 del(i)
+del(col1)
+del(col2)
 
 # INTRO
 font_big = pygame.font.Font("resources/fonts/SoukouMincho.ttf", 100)
@@ -179,7 +186,6 @@ mid = mido.MidiFile(pathToMidi)
 iterable = iter(mid)
 msg = next(iterable)
 next_msg_time = 0
-
 
 if not live_input:
     current_time = 0
@@ -262,9 +268,10 @@ else:
     mido.get_input_names()
     port = mido.open_input()
     while True:
-        for msg in port.iter_pending():
-            print(msg)
-            if msg.type == 'note_on' or msg.type == 'note_off':
+        try:
+            for msg in port.iter_pending():
+                print(msg)
+                if msg.type == 'note_on' or msg.type == 'note_off':
                     #A0 (note_path[1]) is msg.note == 21
                     note_paths[msg.note + 1 - 21].toggle_note(msg.channel, msg.velocity, lin_map_vel(msg.velocity))
                 elif msg.is_meta == False:
@@ -284,7 +291,6 @@ else:
                         pass
                     else:
                         print("Unimplemented message type" + "\n" + "\n")
-
                 else:
                     #is metaMessage
 
