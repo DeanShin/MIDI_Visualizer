@@ -5,7 +5,7 @@ from piano_roll_obj import PianoRollObj
 
 class NotePath():
 
-    def __init__(self, note_id, screen_y, spd):
+    def __init__(self, note_id, screen_y, spd, col1, col2):
         self.is_sustain = False
         self.piano_y_pos = int(screen_y * 5 / 6)
         if note_id is -1:
@@ -20,11 +20,13 @@ class NotePath():
         self.note_id = note_id
         self.y = 0
         self.spd = spd
+        self.col1 = col1
+        self.col2 = col2
 
 
     def toggle_note(self, channel, velocity, lin_map_vel):
         if self.start_note:
-            self.notes.append(NoteObj(self.note_id, channel, velocity, lin_map_vel, self.spd, self.is_sustain))
+            self.notes.append(NoteObj(self.note_id, channel, velocity, lin_map_vel, self.spd, self.is_sustain, self.col1, self.col2))
         else:
             self.notes[-1].stop_growing()
         self.start_note = not self.start_note
