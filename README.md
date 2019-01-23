@@ -11,3 +11,15 @@ In command line, MIDI_Visualizer uses a parser to parse commands from the user.
 ```--tbe``` takes a float of time (seconds) before the visualizer ends the program after receiving the final message.  
 ```--spd``` takes an int and affects the downward speed of the notes.  
 ```--rcd``` takes a Y/N input and affects whether the program records and outputs the visualization as an mp4 file to the video folder.  
+```--title```, ```--subtitle```, ```--composer``` and ```--arranger``` take in strings that appear in an intro sequence.
+```--col1``` takes a hex color code i.e. "#00CC00" 
+
+
+##Known Problems
+On MacOS, the code 
+```
+player = pygame.midi.Output(0)
+player.set_instrument(0)
+```
+does not work. Follow the instructions @ https://stackoverflow.com/questions/49543366/why-pygame-midi-doesnt-work-on-macos-whereas-pygame-mixer-does
+
