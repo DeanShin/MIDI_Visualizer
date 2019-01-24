@@ -18,13 +18,12 @@ from note_obj import NoteObj
 
 from midi2audio import FluidSynth
 
-
 parser = argparse.ArgumentParser()
 parser.add_argument("--rfd", default="N", required=False, help="bool  record notes live from a connected device")
-parser.add_argument("--filepath", default="./examples/midifiles/SNK.mid", required=False, help="str  path to midi file")
+parser.add_argument("--filepath", default="./examples/midifiles/test.mid", required=False, help="str  path to midi file")
 parser.add_argument("--title", default="boop", required=False, help="str  title of piece")
-parser.add_argument("--subtitle", default="", required=False, help="str  subtitle")
-parser.add_argument("--composer", default="", required=False, help="str  composer")
+parser.add_argument("--subtitle", default="adeeboop", required=False, help="str  subtitle")
+parser.add_argument("--composer", default="composure", required=False, help="str  composer")
 parser.add_argument("--arranger", default="Me", required=False, help="str  arranger")
 parser.add_argument("--tbs", default="1", required=False, help="float  time before start")
 parser.add_argument("--tbe", default="3", required=False, help="float  time before end")
@@ -90,8 +89,10 @@ def hex_to_rgb(value):
     return tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
 
 def lin_map_vel(velocity):
-    
-    return (float(velocity - min_vel)/float(max_vel - min_vel + 1))
+    if velocity == 0:
+        return 0
+    else:
+        return (float(velocity - min_vel)/float(max_vel - min_vel + 1))
 
 def draw_all():
     window.fill(background)
@@ -120,35 +121,39 @@ col2 = hex_to_rgb(args["col2"])
 i = 0
 while i < 89:
     #i - 1 in NotePath() accounts for NotePath 0 being the path for the pedal
-    note_paths.append(NotePath(i - 1, window_dims[1], int(args["spd"]), col1, col2))
+    note_paths.append(NotePath(i - 1, window_dims, int(args["spd"]), col1, col2))
     i += 1
 del(i)
 del(col1)
 del(col2)
 
 # INTRO
-font_big = pygame.font.Font("resources/fonts/SoukouMincho.ttf", 100)
+font_big = pygame.font.Font("resources/fonts/SoukouMincho.ttf", window_dims[1] / 9)
 text_big = font_big.render(args["title"], True, (255, 255, 255))
-font_med = pygame.font.Font("resources/fonts/SoukouMincho.ttf", 70)
+font_med = pygame.font.Font("resources/fonts/SoukouMincho.ttf", window_dims[1] / 12)
 text_med = font_med.render(args["subtitle"], True, (255, 255, 255))
-font_sml = pygame.font.Font("resources/fonts/SoukouMincho.ttf", 40)
+font_sml = pygame.font.Font("resources/fonts/SoukouMincho.ttf", window_dims[1] / 24)
 text_sml = font_sml.render("Composed by " + args["composer"] + ", Arranged by " + args["arranger"] + ".", True, (255,255,255))
 
-text_surface=pygame.Surface((window_dims[0], window_dims[1] - 400))
+text_surface=pygame.Surface((window_dims[0], window_dims[1] * 2/3))
 
 #FADE IN
+fade_speed = 3
 alpha = 0
 while alpha < 256:
     pygame.display.flip()
     clock.tick(FPS)
     draw_all()
     text_surface.fill((background[0], background[1], background[2], 0))
-    text_surface.blit(text_big, (window_dims[0]/2 - text_big.get_width() // 2, window_dims[1]/2 - text_big.get_height() // 2 - 70))
-    text_surface.blit(text_med, (window_dims[0]/2 - text_med.get_width() // 2, window_dims[1]/2 - text_med.get_height() // 2))
-    text_surface.blit(text_sml, (window_dims[0]/2 - text_sml.get_width() // 2, window_dims[1]/2 - text_sml.get_height() // 2 + 55))
+    text_surface.blit(text_big, (window_dims[0]/2 - text_big.get_width() // 2, \
+     window_dims[1]/2 - text_big.get_height() // 2 - window_dims[1]/12))
+    text_surface.blit(text_med, (window_dims[0]/2 - text_med.get_width() // 2, \
+    window_dims[1]/2 - text_med.get_height() // 2))
+    text_surface.blit(text_sml, (window_dims[0]/2 - text_sml.get_width() // 2, \
+    window_dims[1]/2 - text_sml.get_height() // 2 + window_dims[1]/16))
     text_surface.set_alpha(alpha)
     window.blit(text_surface, (0,0))
-    alpha = alpha + 2
+    alpha = alpha + fade_speed
 
 current_time = 0
 next_msg_time = float(args["tbs"])
@@ -156,9 +161,12 @@ while current_time < next_msg_time:
     pygame.display.flip()
     clock.tick(FPS)
     draw_all()
-    window.blit(text_big, (window_dims[0]/2 - text_big.get_width() // 2, window_dims[1]/2 - text_big.get_height() // 2 - 70))
-    window.blit(text_med, (window_dims[0]/2 - text_med.get_width() // 2, window_dims[1]/2 - text_med.get_height() // 2))
-    window.blit(text_sml, (window_dims[0]/2 - text_sml.get_width() // 2, window_dims[1]/2 - text_sml.get_height() // 2 + 55))
+    window.blit(text_big, (window_dims[0]/2 - text_big.get_width() // 2, \
+    window_dims[1]/2 - text_big.get_height() // 2 - window_dims[1]/12))
+    window.blit(text_med, (window_dims[0]/2 - text_med.get_width() // 2, \
+    window_dims[1]/2 - text_med.get_height() // 2))
+    window.blit(text_sml, (window_dims[0]/2 - text_sml.get_width() // 2, \
+    window_dims[1]/2 - text_sml.get_height() // 2 + window_dims[1]/16))
     current_time = current_time + frame_length
     if is_recording:
         record_video()
@@ -170,18 +178,23 @@ while alpha > 0:
     clock.tick(FPS)
     draw_all()
     text_surface.fill((background[0], background[1], background[2], 0))
-    text_surface.blit(text_big, (window_dims[0]/2 - text_big.get_width() // 2, window_dims[1]/2 - text_big.get_height() // 2 - 70))
-    text_surface.blit(text_med, (window_dims[0]/2 - text_med.get_width() // 2, window_dims[1]/2 - text_med.get_height() // 2))
-    text_surface.blit(text_sml, (window_dims[0]/2 - text_sml.get_width() // 2, window_dims[1]/2 - text_sml.get_height() // 2 + 55))
+    text_surface.blit(text_big, (window_dims[0]/2 - text_big.get_width() // 2, \
+    window_dims[1]/2 - text_big.get_height() // 2 - window_dims[1]/12))
+    text_surface.blit(text_med, (window_dims[0]/2 - text_med.get_width() // 2, \
+    window_dims[1]/2 - text_med.get_height() // 2))
+    text_surface.blit(text_sml, (window_dims[0]/2 - text_sml.get_width() // 2, \
+    window_dims[1]/2 - text_sml.get_height() // 2 + window_dims[1]/16))
     text_surface.set_alpha(alpha)
     window.blit(text_surface, (0,0))
-    alpha = alpha - 2
+    alpha = alpha - fade_speed
 
 del text_big
 del text_med
 del text_sml
 del text_surface
 del alpha
+
+
 
 mid = mido.MidiFile(pathToMidi)
 iterable = iter(mid)
@@ -198,7 +211,8 @@ if not live_input:
                 print(msg)
                 if msg.type == 'note_on' or msg.type == 'note_off':
                     #A0 (note_path[1]) is msg.note == 21
-                    note_paths[msg.note + 1 - 21].toggle_note(msg.channel, msg.velocity, lin_map_vel(msg.velocity))
+                    note_paths[msg.note + 1 - 21].toggle_note( \
+                    msg.channel, msg.velocity, lin_map_vel(msg.velocity))
                 elif msg.is_meta == False:
                     if msg.type == 'control_change':
                         #sustain pedal
@@ -332,7 +346,23 @@ else:
                 print("END")
                 break
 
+
+
 # OUTRO
+
+print("Outro")
+
+black_screen = pygame.Surface((window_dims[0], window_dims[1]))
+
+alpha = 0
+while alpha < 256:
+    pygame.display.flip()
+    clock.tick(FPS)
+    draw_all()
+    alpha += fade_speed
+    black_screen.set_alpha(alpha)
+    window.blit(black_screen, (0,0))
+
 
 if is_recording:
     from subprocess import call

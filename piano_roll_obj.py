@@ -2,15 +2,17 @@
 
 class PianoRollObj():
 
-    def __init__(self, x, number, screen_y):
+    def __init__(self, x, number, screen):
         self.is_white_note = False
-        self.width = 20
-        self.height = int(screen_y / 9)
+        self.width = screen[0]/88
+        self.height = int(screen[1] / 9)
         self.x = x
-        self.y = int(screen_y * 5 / 6)
+        self.y = int(screen[1] * 5 / 6)
         self.is_being_played = False
         if number % 12 == 1 or number % 12 == 4 or number % 12 == 6 or number % 12 == 9 or number % 12 == 11:
             #black note (A#/Bb , C#/Db , D#/Eb , F#/Gb , G#/Ab)
+            self.width -= 2
+            self.x += 1
             self.color = (0, 0, 0)
         else:
             #white note (A , B , C , D , E , F , G)
@@ -20,11 +22,11 @@ class PianoRollObj():
             self.lower_x = x
             if number % 12 == 0 or number % 12 == 2 or number % 12 == 5 or number % 12 == 7 or number % 12 == 10:
                 #if there is a black note to the left,
-                self.lower_x -= 10
-                self.lower_width += 10
+                self.lower_x -= self.width / 2
+                self.lower_width += self.width / 2
             if number % 12 == 0 or number % 12 == 3 or number % 12 == 5 or number % 12 == 8 or number % 12 == 10:
                 #if there is a black note to the right,
-                self.lower_width += 10
+                self.lower_width += self.width / 2
 
     def toggle(self, color):
         self.is_being_played = not self.is_being_played

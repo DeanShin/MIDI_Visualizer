@@ -2,13 +2,13 @@
 
 class NoteObj():
 
-    def __init__(self, note_id, channel, velocity, lin_map_vel, spd, is_sustain, col1, col2):
+    def __init__(self, note_id, channel, velocity, lin_map_vel, spd, is_sustain, width, col1, col2):
         self.note_id = note_id
         self.velocity = velocity
         self.channel = channel
         self.height = 0
-        self.width = 20
-        self.x = note_id * 20
+        self.width = width
+        self.x = note_id * self.width
         self.y = 0
         self.change_y = spd
         #making note color change as velocity 
@@ -22,7 +22,6 @@ class NoteObj():
         self.shrinking = False
         self.is_sustain = True
         if is_sustain is True:
-            self.width = 1760
             self.x = 0
             self.color = (47, 47, 47)
 
