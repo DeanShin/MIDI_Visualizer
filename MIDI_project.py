@@ -20,11 +20,11 @@ from midi2audio import FluidSynth
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--rfd", default="N", required=False, help="bool  record notes live from a connected device")
-parser.add_argument("--filepath", default="./examples/midifiles/test.mid", required=False, help="str  path to midi file")
+parser.add_argument("--filepath", default="./examples/midifiles/SNK.mid", required=False, help="str  path to midi file")
 parser.add_argument("--title", default="boop", required=False, help="str  title of piece")
-parser.add_argument("--subtitle", default="adeeboop", required=False, help="str  subtitle")
+parser.add_argument("--subtitle", default="adeebop", required=False, help="str  subtitle")
 parser.add_argument("--composer", default="composure", required=False, help="str  composer")
-parser.add_argument("--arranger", default="Me", required=False, help="str  arranger")
+parser.add_argument("--arranger", default="a ranger", required=False, help="str  arranger")
 parser.add_argument("--tbs", default="1", required=False, help="float  time before start")
 parser.add_argument("--tbe", default="3", required=False, help="float  time before end")
 parser.add_argument("--spd", default="5", required=False, help="int  speed of notes")
@@ -138,7 +138,7 @@ text_sml = font_sml.render("Composed by " + args["composer"] + ", Arranged by " 
 text_surface=pygame.Surface((window_dims[0], window_dims[1] * 2/3))
 
 #FADE IN
-fade_speed = 3
+fade_speed = int(frame_length * 180)
 alpha = 0
 while alpha < 256:
     pygame.display.flip()
@@ -146,7 +146,7 @@ while alpha < 256:
     draw_all()
     text_surface.fill((background[0], background[1], background[2], 0))
     text_surface.blit(text_big, (window_dims[0]/2 - text_big.get_width() // 2, \
-     window_dims[1]/2 - text_big.get_height() // 2 - window_dims[1]/12))
+    window_dims[1]/2 - text_big.get_height() // 2 - window_dims[1]/12))
     text_surface.blit(text_med, (window_dims[0]/2 - text_med.get_width() // 2, \
     window_dims[1]/2 - text_med.get_height() // 2))
     text_surface.blit(text_sml, (window_dims[0]/2 - text_sml.get_width() // 2, \
@@ -154,7 +154,10 @@ while alpha < 256:
     text_surface.set_alpha(alpha)
     window.blit(text_surface, (0,0))
     alpha = alpha + fade_speed
+    if is_recording:
+        record_video()
 
+#REMAIN
 current_time = 0
 next_msg_time = float(args["tbs"])
 while current_time < next_msg_time:
@@ -172,6 +175,7 @@ while current_time < next_msg_time:
         record_video()
     #print(current_time)
 
+#FADE OUT
 alpha = 255
 while alpha > 0:
     pygame.display.flip()
@@ -187,20 +191,23 @@ while alpha > 0:
     text_surface.set_alpha(alpha)
     window.blit(text_surface, (0,0))
     alpha = alpha - fade_speed
+    if is_recording:
+        record_video()
 
+#CLEANUP
 del text_big
 del text_med
 del text_sml
 del text_surface
 del alpha
 
-
+#THE MEAT OF THE PROGRAM
 
 mid = mido.MidiFile(pathToMidi)
 iterable = iter(mid)
 msg = next(iterable)
 next_msg_time = 0
-
+spd = int(args["spd"])
 if not live_input:
     current_time = 0
     stop_reading = False
@@ -208,18 +215,21 @@ if not live_input:
     while True:
         try:
             while current_time >= next_msg_time and not stop_reading:
+                print(current_time - next_msg_time)
+                print("Pixels to offset: " + str((current_time - next_msg_time) / frame_length * spd))
                 print(msg)
                 if msg.type == 'note_on' or msg.type == 'note_off':
                     #A0 (note_path[1]) is msg.note == 21
                     note_paths[msg.note + 1 - 21].toggle_note( \
-                    msg.channel, msg.velocity, lin_map_vel(msg.velocity))
+                    msg.channel, msg.velocity, lin_map_vel(msg.velocity), \
+                    int((current_time - next_msg_time) / frame_length * spd))
                 elif msg.is_meta == False:
                     if msg.type == 'control_change':
                         #sustain pedal
                         if msg.control == 64:
                             #if msg.value is 0-63, then pedal (note_path[0]) turns off. 
                             #Otherwise, (64-127) turn on.
-                            note_paths[0].toggle_note(0, 0, 0)
+                            note_paths[0].toggle_note(0, 0, 0, int((current_time - next_msg_time) / frame_length * spd))
                             if msg.value < 64:
                                 print("PEDAL OFF")
                             else:
@@ -346,11 +356,11 @@ else:
                 print("END")
                 break
 
-
-
 # OUTRO
 
 print("Outro")
+
+#FADE TO BLACK
 
 black_screen = pygame.Surface((window_dims[0], window_dims[1]))
 
@@ -359,12 +369,15 @@ while alpha < 256:
     pygame.display.flip()
     clock.tick(FPS)
     draw_all()
-    alpha += fade_speed
+    alpha += fade_speed / 2
     black_screen.set_alpha(alpha)
     window.blit(black_screen, (0,0))
+    if is_recording:
+        record_video()
 
+#PROCESS VIDEO
 
 if is_recording:
     from subprocess import call
-    meth = "python3 tk-img2video.py -d ./images -o ./videos/new_video.mp4 -e jpg -t 60"
+    meth = "python3 tk-img2video.py -d ./images -o ./videos/new_video.mp4 -e jpg -t " + str(FPS)
     call([meth.split()])

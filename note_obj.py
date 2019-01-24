@@ -2,11 +2,11 @@
 
 class NoteObj():
 
-    def __init__(self, note_id, channel, velocity, lin_map_vel, spd, is_sustain, width, col1, col2):
+    def __init__(self, note_id, channel, velocity, lin_map_vel, spd, is_sustain, width, col1, col2, offset):
         self.note_id = note_id
         self.velocity = velocity
         self.channel = channel
-        self.height = 0
+        self.height = offset
         self.width = width
         self.x = note_id * self.width
         self.y = 0

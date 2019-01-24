@@ -26,10 +26,10 @@ class NotePath():
         self.col2 = col2
 
 
-    def toggle_note(self, channel, velocity, lin_map_vel):
+    def toggle_note(self, channel, velocity, lin_map_vel, offset):
         if self.start_note:
             self.notes.append(NoteObj(self.note_id, channel, velocity, lin_map_vel, \
-            self.spd, self.is_sustain, self.width, self.col1, self.col2))
+            self.spd, self.is_sustain, self.width, self.col1, self.col2, offset))
         else:
             self.notes[-1].stop_growing()
         self.start_note = not self.start_note
