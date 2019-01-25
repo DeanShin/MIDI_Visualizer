@@ -16,11 +16,9 @@ from datetime import datetime, date
 from note_path import NotePath
 from note_obj import NoteObj
 
-from midi2audio import FluidSynth
-
 parser = argparse.ArgumentParser()
 parser.add_argument("--rfd", default="N", required=False, help="bool  record notes live from a connected device")
-parser.add_argument("--filepath", default="./examples/midifiles/SNK.mid", required=False, help="str  path to midi file")
+parser.add_argument("--filepath", default="./examples/midifiles/test.mid", required=False, help="str  path to midi file")
 parser.add_argument("--title", default="boop", required=False, help="str  title of piece")
 parser.add_argument("--subtitle", default="adeebop", required=False, help="str  subtitle")
 parser.add_argument("--composer", default="composure", required=False, help="str  composer")
@@ -46,7 +44,18 @@ pathToMidi = args["filepath"]
 
 pygame.init()
 pygame.display.set_caption('MIDI Project')
+
+from screeninfo import get_monitors
+for i, m in enumerate(get_monitors()):
+    if i == 0:
+        monitor_width = m.width
+        monitor_height = m.height
+
+
 window_dims = (1760, 990)
+if monitor_width < 1760 or monitor_height < 990:
+    window_dims = (880, 445)
+
 window = pygame.display.set_mode(window_dims)
 background = (63,63,63)
 FPS = 60.0
@@ -107,15 +116,6 @@ def record_video():
     pygame.image.save(window, filename)
     file_num = file_num + 1
 
-def process_audio():
-    # using the default sound font in 44100 Hz sample rate
-    fs = FluidSynth()
-    fs.midi_to_audio(pathToMidi, 'output.wav')
-
-#not working at the moment: need to download fluidsynth, which requires the download of vcpkg, which is blocked
-#by windows
-#process_audio()    
-
 col1 = hex_to_rgb(args["col1"])
 col2 = hex_to_rgb(args["col2"])
 i = 0
@@ -128,11 +128,11 @@ del(col1)
 del(col2)
 
 # INTRO
-font_big = pygame.font.Font("resources/fonts/SoukouMincho.ttf", window_dims[1] / 9)
+font_big = pygame.font.Font("resources/fonts/SoukouMincho.ttf", int(window_dims[1] / 9))
 text_big = font_big.render(args["title"], True, (255, 255, 255))
-font_med = pygame.font.Font("resources/fonts/SoukouMincho.ttf", window_dims[1] / 12)
+font_med = pygame.font.Font("resources/fonts/SoukouMincho.ttf", int(window_dims[1] / 12))
 text_med = font_med.render(args["subtitle"], True, (255, 255, 255))
-font_sml = pygame.font.Font("resources/fonts/SoukouMincho.ttf", window_dims[1] / 24)
+font_sml = pygame.font.Font("resources/fonts/SoukouMincho.ttf", int(window_dims[1] / 24))
 text_sml = font_sml.render("Composed by " + args["composer"] + ", Arranged by " + args["arranger"] + ".", True, (255,255,255))
 
 text_surface=pygame.Surface((window_dims[0], window_dims[1] * 2/3))
