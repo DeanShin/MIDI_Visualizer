@@ -15,6 +15,7 @@ from datetime import datetime, date
 
 from note_path import NotePath
 from note_obj import NoteObj
+from button import Button
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--rfd", default="N", required=False, help="bool  record notes live from a connected device")
@@ -92,6 +93,23 @@ if is_recording:
 
 #mido.merge_tracks(mid.tracks)
 
+buttons = []
+
+def button_check():
+    mouse = pygame.mouse.get_pos()
+    click = pygame.mouse.get_pressed()
+    for button in buttons:
+        if button.x + button.w > mouse[0] > button.x and button.y + button.h > mouse[1] > button.y:
+            button.draw_active(pygame, window, True)
+            if click[0] == 1:
+                i = button.do_something()
+                if i == 0:
+                    sys.exit()
+                elif i == 1:
+                    return True
+        else:
+            button.draw_active(pygame, window, False)
+
 def hex_to_rgb(value):
     value = value.lstrip('#')
     lv = len(value)
@@ -115,6 +133,33 @@ def record_video():
     filename = "Snaps/%04d.png" % file_num
     pygame.image.save(window, filename)
     file_num = file_num + 1
+
+# OPTION SCREEN
+
+opt_scr = True
+
+buttons.append(Button(pygame,"Exit", int(window_dims[1] / 48), window_dims[0] * 13 / 16, window_dims[1] * 14 / 16, \
+window_dims[0] / 8, window_dims[1] / 16, \
+(255,255,255), (127,255,127), 'e'))
+buttons.append(Button(pygame,"Start Program", int(window_dims[1] / 48), window_dims[0] / 16, window_dims[1] * 14 / 16, \
+window_dims[0] / 8, window_dims[1] / 16, \
+(255,255,255), (127,255,127), 's'))
+
+
+while opt_scr == True:
+    pygame.display.flip()
+    clock.tick(FPS)
+    window.fill(background)
+    # Process Events
+    if button_check():
+        opt_scr = False
+    for e in pygame.event.get():
+        if e.type == KEYUP: # On User Key Press Up
+            if e.key == K_ESCAPE: # End Game
+                sys.exit()
+
+del(opt_scr)
+del(buttons)
 
 col1 = hex_to_rgb(args["col1"])
 col2 = hex_to_rgb(args["col2"])
