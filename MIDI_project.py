@@ -16,6 +16,7 @@ from datetime import datetime, date
 from note_path import NotePath
 from note_obj import NoteObj
 from button import Button
+from input_box import InputBox
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--rfd", default="N", required=False, help="bool  record notes live from a connected device")
@@ -94,21 +95,25 @@ if is_recording:
 #mido.merge_tracks(mid.tracks)
 
 buttons = []
+input_boxes = []
 
-def button_check():
-    mouse = pygame.mouse.get_pos()
-    click = pygame.mouse.get_pressed()
+def button_funcs(event):
     for button in buttons:
-        if button.x + button.w > mouse[0] > button.x and button.y + button.h > mouse[1] > button.y:
-            button.draw_active(pygame, window, True)
-            if click[0] == 1:
-                i = button.do_something()
-                if i == 0:
-                    sys.exit()
-                elif i == 1:
-                    return True
-        else:
-            button.draw_active(pygame, window, False)
+        e = button.handle_event(pygame, event)
+        if e != 0:
+            if e == 1:
+                sys.exit()
+            elif e == 2:
+                opt_scr = False
+    for button in buttons:
+        button.update()
+
+def text_box_funcs(event):
+    for box in input_boxes:
+        box.handle_event(pygame, event)
+    for box in input_boxes:
+        box.update()
+
 
 def hex_to_rgb(value):
     value = value.lstrip('#')
@@ -144,19 +149,25 @@ window_dims[0] / 8, window_dims[1] / 16, \
 buttons.append(Button(pygame,"Start Program", int(window_dims[1] / 48), window_dims[0] / 16, window_dims[1] * 14 / 16, \
 window_dims[0] / 8, window_dims[1] / 16, \
 (255,255,255), (127,255,127), 's'))
-
+input_boxes.append(InputBox(pygame, int(window_dims[1] / 48), window_dims[0] / 16, window_dims[1] / 16, \
+window_dims[0], window_dims[1] / 32, \
+(255,255,255), (127,255,127), 'title of the piece'))
 
 while opt_scr == True:
     pygame.display.flip()
     clock.tick(FPS)
     window.fill(background)
     # Process Events
-    if button_check():
-        opt_scr = False
     for e in pygame.event.get():
         if e.type == KEYUP: # On User Key Press Up
             if e.key == K_ESCAPE: # End Game
                 sys.exit()
+        button_funcs(e)
+        text_box_funcs(e)
+    for button in buttons:
+        button.draw(pygame, window)
+    for box in input_boxes:
+        box.draw(pygame, window)
 
 del(opt_scr)
 del(buttons)

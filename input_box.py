@@ -1,10 +1,12 @@
 class InputBox:
 
-    def __init__(self, pygame, text='', fontsize, x, y, w, h, ic, ac):
+    def __init__(self, pygame, fontsize, x, y, w, h, ic, ac, text=''):
         self.rect = pygame.Rect(x, y, w, h)
+        self.width = w
         self.color = ic
         self.text = text
-        self.txt_surface = FONT.render(text, True, self.color)
+        self.font = pygame.font.Font("resources/fonts/SoukouMincho.ttf", fontsize)
+        self.txt_surface = self.font.render(text, True, self.color)
         self.active = False
         self.ac = ac
         self.ic = ic
@@ -29,11 +31,11 @@ class InputBox:
                 else:
                     self.text += event.unicode
                 # Re-render the text.
-                self.txt_surface = FONT.render(self.text, True, self.color)
+                self.txt_surface = self.font.render(self.text, True, self.color)
 
     def update(self):
         # Resize the box if the text is too long.
-        width = max(200, self.txt_surface.get_width()+10)
+        width = max(20, self.txt_surface.get_width()+10)
         self.rect.w = width
 
     def draw(self, pygame, screen):
