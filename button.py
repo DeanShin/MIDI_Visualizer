@@ -20,12 +20,13 @@ class Button():
             # Change the current color of the button.
             self.color = self.ac if self.active else self.ic
         if event.type == pygame.MOUSEBUTTONUP:
-            if self.action == 'e':
+            if self.rect.collidepoint(event.pos):
+                if self.action == 'e':
                 #Exit Program
-                return 1
-            elif self.action == 's':
+                    return 1
+                elif self.action == 's':
                 #Start Visualization
-                return 2
+                    return 2
         else: 
             return 0
 
