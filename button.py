@@ -11,15 +11,6 @@ class Button():
 
     def handle_event(self, pygame, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
-            # If the user clicked on the button rect.
-            if self.rect.collidepoint(event.pos):
-                # Toggle the active variable.
-                self.active = not self.active
-            else:
-                self.active = False
-            # Change the current color of the button.
-            self.color = self.ac if self.active else self.ic
-        if event.type == pygame.MOUSEBUTTONUP:
             if self.rect.collidepoint(event.pos):
                 if self.action == 'e':
                 #Exit Program
@@ -29,8 +20,13 @@ class Button():
                     return 2
         return 0
 
-    def update(self):
-        pass
+    def update(self, pygame, (x, y)):
+        if self.rect.collidepoint(x, y):
+        # Toggle the active variable.
+            self.active = True
+        else:
+            self.active = False
+        self.color = self.ac if self.active else self.ic
         
     def draw(self, pygame, window):
         if self.active:

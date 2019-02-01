@@ -97,6 +97,7 @@ if is_recording:
 buttons = []
 input_boxes = []
 
+
 def button_funcs(event):
     for button in buttons:
         e = button.handle_event(pygame, event)
@@ -104,16 +105,15 @@ def button_funcs(event):
             if e == 1:
                 sys.exit()
             elif e == 2:
-                opt_scr = False
+                return True
     for button in buttons:
-        button.update()
+        button.update(pygame, pygame.mouse.get_pos())
 
-def text_box_funcs(event):
+def input_box_funcs(event):
     for box in input_boxes:
         box.handle_event(pygame, event)
     for box in input_boxes:
         box.update()
-
 
 def hex_to_rgb(value):
     value = value.lstrip('#')
@@ -141,8 +141,6 @@ def record_video():
 
 # OPTION SCREEN
 
-opt_scr = True
-
 buttons.append(Button(pygame,"Exit", int(window_dims[1] / 48), window_dims[0] * 13 / 16, window_dims[1] * 14 / 16, \
 window_dims[0] / 8, window_dims[1] / 16, \
 (255,255,255), (127,255,127), 'e'))
@@ -152,8 +150,14 @@ window_dims[0] / 8, window_dims[1] / 16, \
 input_boxes.append(InputBox(pygame, int(window_dims[1] / 48), window_dims[0] / 16, window_dims[1] / 16, \
 window_dims[0], window_dims[1] / 32, \
 (255,255,255), (127,255,127), 'title of the piece'))
+input_boxes.append(InputBox(pygame, int(window_dims[1] / 48), window_dims[0] / 16, window_dims[1] * 2 / 16, \
+window_dims[0], window_dims[1] / 32, \
+(255,255,255), (127,255,127), 'subtitle of the piece'))
 
-while opt_scr == True:
+
+opt_scr = True
+
+while opt_scr is True:
     pygame.display.flip()
     clock.tick(FPS)
     window.fill(background)
@@ -162,8 +166,9 @@ while opt_scr == True:
         if e.type == KEYUP: # On User Key Press Up
             if e.key == K_ESCAPE: # End Game
                 sys.exit()
-        button_funcs(e)
-        text_box_funcs(e)
+        if button_funcs(e) is True:
+            opt_scr = False
+        input_box_funcs(e)
     for button in buttons:
         button.draw(pygame, window)
     for box in input_boxes:
@@ -171,6 +176,7 @@ while opt_scr == True:
 
 del(opt_scr)
 del(buttons)
+del(input_boxes)
 
 col1 = hex_to_rgb(args["col1"])
 col2 = hex_to_rgb(args["col2"])

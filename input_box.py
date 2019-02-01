@@ -4,6 +4,7 @@ class InputBox:
         self.rect = pygame.Rect(x, y, w, h)
         self.width = w
         self.color = ic
+        self.default = text
         self.text = text
         self.font = pygame.font.Font("resources/fonts/SoukouMincho.ttf", fontsize)
         self.txt_surface = self.font.render(text, True, self.color)
@@ -23,6 +24,8 @@ class InputBox:
             self.color = self.ac if self.active else self.ic
         if event.type == pygame.KEYDOWN:
             if self.active:
+                if self.text == self.default:
+                    self.text = ''
                 if event.key == pygame.K_RETURN:
                     print(self.text)
                     self.text = ''
