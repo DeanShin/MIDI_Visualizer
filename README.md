@@ -24,7 +24,12 @@ player.set_instrument(0)
 does not work. 
 
 Open Spotlight Search and search Audio MIDI Setup;
+
 Open Audio MIDI Setup and press command+2––
+
 This will open the 'MIDI Studio'.
+
 Double Click the IAC Driver icon.
+
 Click the checkbox that says 'Device is Online'.
+
