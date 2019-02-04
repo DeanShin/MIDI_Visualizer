@@ -12,6 +12,9 @@ class InputBox:
         self.ac = ac
         self.ic = ic
 
+    def get_text(self):
+        return self.text
+
     def handle_event(self, pygame, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             # If the user clicked on the input_box rect.

@@ -20,11 +20,6 @@ from input_box import InputBox
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--rfd", default="N", required=False, help="bool  record notes live from a connected device")
-parser.add_argument("--filepath", default="./examples/midifiles/test.mid", required=False, help="str  path to midi file")
-parser.add_argument("--title", default="boop", required=False, help="str  title of piece")
-parser.add_argument("--subtitle", default="adeebop", required=False, help="str  subtitle")
-parser.add_argument("--composer", default="composure", required=False, help="str  composer")
-parser.add_argument("--arranger", default="a ranger", required=False, help="str  arranger")
 parser.add_argument("--tbs", default="1", required=False, help="float  time before start")
 parser.add_argument("--tbe", default="3", required=False, help="float  time before end")
 parser.add_argument("--spd", default="5", required=False, help="int  speed of notes")
@@ -42,21 +37,22 @@ if args["rcd"] is "Y":
     is_recording = True
 else:
     is_recording = False
-pathToMidi = args["filepath"]
 
 pygame.init()
 pygame.display.set_caption('MIDI Project')
 
-from screeninfo import get_monitors
-for i, m in enumerate(get_monitors()):
-    if i == 0:
-        monitor_width = m.width
-        monitor_height = m.height
-
-
-window_dims = (1760, 990)
-if monitor_width < 1760 or monitor_height < 990:
-    window_dims = (880, 445)
+try:
+    from screeninfo import get_monitors
+    for i, m in enumerate(get_monitors()):
+        if i == 0:
+            monitor_width = m.width
+            monitor_height = m.height
+    window_dims = (1760, 990)
+    if monitor_width < 1760 or monitor_height < 990:
+        window_dims = (880, 445)
+except:
+    print("Screensize detection failed.")
+    window_dims = (1760, 990)
 
 window = pygame.display.set_mode(window_dims)
 background = (63,63,63)
@@ -65,38 +61,16 @@ frame_length = 1/FPS
 clock = pygame.time.Clock()
 
 pygame.midi.init()
-player = pygame.midi.Output(0)
+try:
+    player = pygame.midi.Output(0)
+except:
+    player = pygame.midi.Output(1)
 player.set_instrument(0)
-
-mid = mido.MidiFile(pathToMidi)
-note_paths = []
-
-min_vel = 127
-max_vel = 0
-# find minimum and maximum values of velocity
-list_of_vel = []
-for msg in mid:
-    if msg.type is 'note_on' and msg.velocity is not 0 and msg.type is not 'note_off':
-        list_of_vel.append(msg.velocity)
-for vel in list_of_vel:
-    if min_vel > vel:
-        min_vel = vel
-    if max_vel < vel:
-        max_vel = vel
-del(list_of_vel)
-
-if is_recording:
-    file_num = 0
-    try:
-        os.makedirs("Snaps")
-    except OSError:
-        pass
 
 #mido.merge_tracks(mid.tracks)
 
 buttons = []
 input_boxes = []
-
 
 def button_funcs(event):
     for button in buttons:
@@ -139,21 +113,21 @@ def record_video():
     pygame.image.save(window, filename)
     file_num = file_num + 1
 
+def spawnButton(x, y, w, h, text):
+    buttons.append(Button(pygame, int(window_dims[1] / 48), x, y, w, h, (255,255,255), (127,255,127), text))
+
+def spawnInputBox(x, y, w, h, text):
+    input_boxes.append(InputBox(pygame, int(window_dims[1] / 48), x, y, w, h, (255,255,255), (127,255,127), text))
+
 # OPTION SCREEN
 
-buttons.append(Button(pygame,"Exit", int(window_dims[1] / 48), window_dims[0] * 13 / 16, window_dims[1] * 14 / 16, \
-window_dims[0] / 8, window_dims[1] / 16, \
-(255,255,255), (127,255,127), 'e'))
-buttons.append(Button(pygame,"Start Program", int(window_dims[1] / 48), window_dims[0] / 16, window_dims[1] * 14 / 16, \
-window_dims[0] / 8, window_dims[1] / 16, \
-(255,255,255), (127,255,127), 's'))
-input_boxes.append(InputBox(pygame, int(window_dims[1] / 48), window_dims[0] / 16, window_dims[1] / 16, \
-window_dims[0], window_dims[1] / 32, \
-(255,255,255), (127,255,127), 'title of the piece'))
-input_boxes.append(InputBox(pygame, int(window_dims[1] / 48), window_dims[0] / 16, window_dims[1] * 2 / 16, \
-window_dims[0], window_dims[1] / 32, \
-(255,255,255), (127,255,127), 'subtitle of the piece'))
-
+spawnButton(window_dims[0] * 13 / 16 , window_dims[1] * 14 / 16 , window_dims[0] / 8 , window_dims[1] / 16 , "Exit Program")
+spawnButton(window_dims[0] * 01 / 16 , window_dims[1] * 14 / 16 , window_dims[0] / 8 , window_dims[1] / 16 , "Start Program")
+spawnInputBox(window_dims[0] * 01 / 16 , window_dims[1] * 01 / 16 , window_dims[0] , window_dims[1] / 32 , "Filepath")
+spawnInputBox(window_dims[0] * 01 / 16 , window_dims[1] * 02 / 16 , window_dims[0] , window_dims[1] / 32 , "Title")
+spawnInputBox(window_dims[0] * 01 / 16 , window_dims[1] * 03 / 16 , window_dims[0] , window_dims[1] / 32 , "Subtitle")
+spawnInputBox(window_dims[0] * 01 / 16 , window_dims[1] * 04 / 16 , window_dims[0] , window_dims[1] / 32 , "Composer")
+spawnInputBox(window_dims[0] * 01 / 16 , window_dims[1] * 05 / 16 , window_dims[0] , window_dims[1] / 32 , "Arranger")
 
 opt_scr = True
 
@@ -174,30 +148,64 @@ while opt_scr is True:
     for box in input_boxes:
         box.draw(pygame, window)
 
-del(opt_scr)
-del(buttons)
-del(input_boxes)
+filepath = input_boxes[0].get_text()
+
+try:
+    mid = mido.MidiFile(filepath)
+except:
+    print("Invalid Filepath")
+    filepath = "./examples/midifiles/test.mid"
+    mid = mido.MidiFile(filepath)
+
+title = input_boxes[1].get_text()
+subtitle = input_boxes[2].get_text()
+composer = input_boxes[3].get_text()
+arranger = input_boxes[4].get_text()
+
+min_vel = 127
+max_vel = 0
+# find minimum and maximum values of velocity
+list_of_vel = []
+for msg in mid:
+    if msg.type is 'note_on' and msg.velocity is not 0 and msg.type is not 'note_off':
+        list_of_vel.append(msg.velocity)
+for vel in list_of_vel:
+    if min_vel > vel:
+        min_vel = vel
+    if max_vel < vel:
+        max_vel = vel
+del(list_of_vel)
+
+if is_recording:
+    file_num = 0
+    try:
+        os.makedirs("Snaps")
+    except OSError:
+        pass
+
+del(opt_scr, buttons, input_boxes)
+
 
 col1 = hex_to_rgb(args["col1"])
 col2 = hex_to_rgb(args["col2"])
 i = 0
+note_paths = []
 while i < 89:
     #i - 1 in NotePath() accounts for NotePath 0 being the path for the pedal
     note_paths.append(NotePath(i - 1, window_dims, int(args["spd"]), col1, col2))
     i += 1
-del(i)
-del(col1)
-del(col2)
+del(i, col1, col2)
 
 # INTRO
-font_big = pygame.font.Font("resources/fonts/SoukouMincho.ttf", int(window_dims[1] / 9))
-text_big = font_big.render(args["title"], True, (255, 255, 255))
-font_med = pygame.font.Font("resources/fonts/SoukouMincho.ttf", int(window_dims[1] / 12))
-text_med = font_med.render(args["subtitle"], True, (255, 255, 255))
-font_sml = pygame.font.Font("resources/fonts/SoukouMincho.ttf", int(window_dims[1] / 24))
-text_sml = font_sml.render("Composed by " + args["composer"] + ", Arranged by " + args["arranger"] + ".", True, (255,255,255))
+font_big = pygame.font.Font("./resources/fonts/SoukouMincho.ttf", int(window_dims[1] / 9))
+text_big = font_big.render(title, True, (255, 255, 255))
+font_med = pygame.font.Font("./resources/fonts/SoukouMincho.ttf", int(window_dims[1] / 12))
+text_med = font_med.render(subtitle, True, (255, 255, 255))
+font_sml = pygame.font.Font("./resources/fonts/SoukouMincho.ttf", int(window_dims[1] / 24))
+text_sml = font_sml.render("Composed by " + composer + ", Arranged by " + arranger + ".", True, (255,255,255))
 
-text_surface=pygame.Surface((window_dims[0], window_dims[1] * 2/3))
+del(title, subtitle, composer, arranger)
+text_surface = pygame.Surface((window_dims[0], window_dims[1] * 2/3))
 
 #FADE IN
 fade_speed = int(frame_length * 180)
@@ -235,7 +243,6 @@ while current_time < next_msg_time:
     current_time = current_time + frame_length
     if is_recording:
         record_video()
-    #print(current_time)
 
 #FADE OUT
 alpha = 255
@@ -257,15 +264,12 @@ while alpha > 0:
         record_video()
 
 #CLEANUP
-del text_big
-del text_med
-del text_sml
-del text_surface
-del alpha
+del(text_big, text_med, text_sml, text_surface, alpha)
 
 #THE MEAT OF THE PROGRAM
 
-mid = mido.MidiFile(pathToMidi)
+mid = mido.MidiFile(filepath)
+del(filepath)
 iterable = iter(mid)
 msg = next(iterable)
 next_msg_time = 0
@@ -289,7 +293,7 @@ if not live_input:
                     if msg.type == 'control_change':
                         #sustain pedal
                         if msg.control == 64:
-                            #if msg.value is 0-63, then pedal (note_path[0]) turns off. 
+                            #if msg.value is 0-63, then pedal (note_path[0]) turns off.
                             #Otherwise, (64-127) turn on.
                             note_paths[0].toggle_note(0, 0, 0, int((current_time - next_msg_time) / frame_length * spd))
                             if msg.value < 64:
@@ -365,7 +369,7 @@ else:
                     if msg.type == 'control_change':
                         #sustain pedal
                         if msg.control == 64:
-                            #if msg.value is 0-63, then pedal (note_path[0]) turns off. 
+                            #if msg.value is 0-63, then pedal (note_path[0]) turns off.
                             #Otherwise, (64-127) turn on.
                             note_paths[0].toggle_note(0, 0, 0)
                             if msg.value < 64:
