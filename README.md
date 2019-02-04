@@ -15,11 +15,16 @@ In command line, MIDI_Visualizer uses a parser to parse commands from the user.
 ```--col1``` takes a hex color code i.e. "#00CC00" 
 
 
-##Known Problems
+## Known Problems
 On MacOS, the code 
 ```
 player = pygame.midi.Output(0)
 player.set_instrument(0)
 ```
-does not work. Follow the instructions @ https://stackoverflow.com/questions/49543366/why-pygame-midi-doesnt-work-on-macos-whereas-pygame-mixer-does
+does not work. 
 
+Open Spotlight Search and search Audio MIDI Setup;
+Open Audio MIDI Setup and press command+2––
+This will open the 'MIDI Studio'.
+Double Click the IAC Driver icon.
+Click the checkbox that says 'Device is Online'.
