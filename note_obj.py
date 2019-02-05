@@ -11,9 +11,7 @@ class NoteObj():
         self.x = note_id * self.width
         self.y = 0
         self.change_y = spd
-        #making note color change as velocity 
-        #if col1 is yellow (255, 255, 0) and col2 is blue (0, 0, 255)
-        #then equation becomes (col1[0] + lin_map_vel * (col2[0] - col1[0]))
+        #making note color change as velocity changes
         self.color = (int(col1[0] + lin_map_vel * (col2[0] - col1[0])), \
         int(col1[1] + lin_map_vel * (col2[1] - col1[1])), \
         int(col1[2] + lin_map_vel * (col2[2] - col1[2])))
@@ -25,8 +23,9 @@ class NoteObj():
             self.x = 0
             self.color = (47, 47, 47)
 
-    def stop_growing(self):
+    def stop_growing(self, offset):
         self.growing = False
+        self.y = self.y - offset
 
     def start_shrinking(self):
         self.shrinking = True

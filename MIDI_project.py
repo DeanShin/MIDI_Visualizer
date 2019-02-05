@@ -119,15 +119,16 @@ def spawnButton(x, y, w, h, text):
 def spawnInputBox(x, y, w, h, text):
     input_boxes.append(InputBox(pygame, int(window_dims[1] / 48), x, y, w, h, (255,255,255), (127,255,127), text))
 
+
 # OPTION SCREEN
 
 spawnButton(window_dims[0] * 13 / 16 , window_dims[1] * 14 / 16 , window_dims[0] / 8 , window_dims[1] / 16 , "Exit Program")
-spawnButton(window_dims[0] * 01 / 16 , window_dims[1] * 14 / 16 , window_dims[0] / 8 , window_dims[1] / 16 , "Start Program")
-spawnInputBox(window_dims[0] * 01 / 16 , window_dims[1] * 01 / 16 , window_dims[0] , window_dims[1] / 32 , "Filepath")
-spawnInputBox(window_dims[0] * 01 / 16 , window_dims[1] * 02 / 16 , window_dims[0] , window_dims[1] / 32 , "Title")
-spawnInputBox(window_dims[0] * 01 / 16 , window_dims[1] * 03 / 16 , window_dims[0] , window_dims[1] / 32 , "Subtitle")
-spawnInputBox(window_dims[0] * 01 / 16 , window_dims[1] * 04 / 16 , window_dims[0] , window_dims[1] / 32 , "Composer")
-spawnInputBox(window_dims[0] * 01 / 16 , window_dims[1] * 05 / 16 , window_dims[0] , window_dims[1] / 32 , "Arranger")
+spawnButton(window_dims[0] * 1 / 16 , window_dims[1] * 14 / 16 , window_dims[0] / 8 , window_dims[1] / 16 , "Start Program")
+spawnInputBox(window_dims[0] * 1 / 16 , window_dims[1] * 1 / 16 , window_dims[0] , window_dims[1] / 32 , "Filepath")
+spawnInputBox(window_dims[0] * 1 / 16 , window_dims[1] * 2 / 16 , window_dims[0] , window_dims[1] / 32 , "Title")
+spawnInputBox(window_dims[0] * 1 / 16 , window_dims[1] * 3 / 16 , window_dims[0] , window_dims[1] / 32 , "Subtitle")
+spawnInputBox(window_dims[0] * 1 / 16 , window_dims[1] * 4 / 16 , window_dims[0] , window_dims[1] / 32 , "Composer")
+spawnInputBox(window_dims[0] * 1 / 16 , window_dims[1] * 5 / 16 , window_dims[0] , window_dims[1] / 32 , "Arranger")
 
 opt_scr = True
 
@@ -282,13 +283,12 @@ if not live_input:
         try:
             while current_time >= next_msg_time and not stop_reading:
                 print(current_time - next_msg_time)
-                print("Pixels to offset: " + str((current_time - next_msg_time) / frame_length * spd))
+                #print("Pixels to offset: " + str((current_time - next_msg_time) / frame_length * spd))
                 print(msg)
                 if msg.type == 'note_on' or msg.type == 'note_off':
                     #A0 (note_path[1]) is msg.note == 21
-                    note_paths[msg.note + 1 - 21].toggle_note( \
-                    msg.channel, msg.velocity, lin_map_vel(msg.velocity), \
-                    int((current_time - next_msg_time) / frame_length * spd))
+                    note_paths[msg.note + 1 - 21].toggle_note(msg.channel, msg.velocity, \
+                    lin_map_vel(msg.velocity), int((current_time - next_msg_time) / frame_length * spd))
                 elif msg.is_meta == False:
                     if msg.type == 'control_change':
                         #sustain pedal

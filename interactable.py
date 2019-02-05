@@ -1,4 +1,4 @@
-class InputBox:
+class Interactable:
 
     def __init__(self, pygame, fontsize, x, y, w, h, ic, ac, text=''):
         self.rect = pygame.Rect(x, y, w, h)
@@ -44,8 +44,8 @@ class InputBox:
         width = max(20, self.txt_surface.get_width()+10)
         self.rect.w = width
 
-    def draw(self, pygame, screen):
+    def draw(self, pygame, window, thickness):
         # Blit the rect.
-        pygame.draw.rect(screen, self.color, self.rect, 2)
+        pygame.draw.rect(window, self.color, self.rect, thickness)
         # Blit the text.
         screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
