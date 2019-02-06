@@ -27,4 +27,4 @@ Open Audio MIDI Setup and press command+2
 This will open the 'MIDI Studio'.  
 Double Click the IAC Driver icon.  
 Click the checkbox that says 'Device is Online'.  
-
+This will connect to any MIDI synthesizers you have downloaded--which if you haven't already, download a MIDI synthesizer online such as SimpleSynth or Reason.
