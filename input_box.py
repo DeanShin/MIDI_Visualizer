@@ -1,19 +1,21 @@
-class InputBox:
+from interactable import Interactable
 
-    def __init__(self, pygame, fontsize, x, y, w, h, ic, ac, text=''):
+class InputBox(Interactable):
+
+    def __init__(self, pygame, fontsize, x, y, w, h, ic, hc, ac, text=''):
         self.rect = pygame.Rect(x, y, w, h)
-        self.width = w
-        self.color = ic
-        self.default = text
         self.text = text
         self.font = pygame.font.Font("resources/fonts/SoukouMincho.ttf", fontsize)
-        self.txt_surface = self.font.render(text, True, self.color)
-        self.active = False
+        self.text_surface = self.font.render(text, True, ic)
         self.ac = ac
+        self.hc = hc
         self.ic = ic
+        self.color = ic
 
-    def get_text(self):
-        return self.text
+        self.thickness = 2
+        self.text_pos = (self.rect.x+5, self.rect.y+5)
+        self.active = False
+        self.default = text
 
     def handle_event(self, pygame, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -31,21 +33,17 @@ class InputBox:
                     self.text = ''
                 if event.key == pygame.K_RETURN:
                     print(self.text)
-                    self.text = ''
                 elif event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
                 else:
                     self.text += event.unicode
                 # Re-render the text.
-                self.txt_surface = self.font.render(self.text, True, self.color)
+                self.text_surface = self.font.render(self.text, True, self.color)
 
-    def update(self):
+
+    def update(self, (x,y)):
         # Resize the box if the text is too long.
-        width = max(20, self.txt_surface.get_width()+10)
+        width = max(20, self.text_surface.get_width()+10)
         self.rect.w = width
-
-    def draw(self, pygame, screen):
-        # Blit the rect.
-        pygame.draw.rect(screen, self.color, self.rect, 2)
-        # Blit the text.
-        screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
+        if not self.active:
+            Interactable.update(self, (x,y))

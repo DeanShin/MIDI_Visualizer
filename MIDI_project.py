@@ -81,13 +81,13 @@ def button_funcs(event):
             elif e == 2:
                 return True
     for button in buttons:
-        button.update(pygame, pygame.mouse.get_pos())
+        button.update(pygame.mouse.get_pos())
 
 def input_box_funcs(event):
     for box in input_boxes:
         box.handle_event(pygame, event)
     for box in input_boxes:
-        box.update()
+        box.update(pygame.mouse.get_pos())
 
 def hex_to_rgb(value):
     value = value.lstrip('#')
@@ -114,10 +114,10 @@ def record_video():
     file_num = file_num + 1
 
 def spawnButton(x, y, w, h, text):
-    buttons.append(Button(pygame, int(window_dims[1] / 48), x, y, w, h, (255,255,255), (127,255,127), text))
+    buttons.append(Button(pygame, int(window_dims[1] / 48), x, y, w, h, (255,255,255), (127,255,127), (127,255,127), text))
 
 def spawnInputBox(x, y, w, h, text):
-    input_boxes.append(InputBox(pygame, int(window_dims[1] / 48), x, y, w, h, (255,255,255), (127,255,127), text))
+    input_boxes.append(InputBox(pygame, int(window_dims[1] / 48), x, y, w, h, (255,255,255), (127,255,127), (127,255,127), text))
 
 
 # OPTION SCREEN
@@ -149,7 +149,7 @@ while opt_scr is True:
     for box in input_boxes:
         box.draw(pygame, window)
 
-filepath = input_boxes[0].get_text()
+filepath = input_boxes[0].text
 
 try:
     mid = mido.MidiFile(filepath)
@@ -158,10 +158,10 @@ except:
     filepath = "./examples/midifiles/test.mid"
     mid = mido.MidiFile(filepath)
 
-title = input_boxes[1].get_text()
-subtitle = input_boxes[2].get_text()
-composer = input_boxes[3].get_text()
-arranger = input_boxes[4].get_text()
+title = input_boxes[1].text
+subtitle = input_boxes[2].text
+composer = input_boxes[3].text
+arranger = input_boxes[4].text
 
 min_vel = 127
 max_vel = 0
