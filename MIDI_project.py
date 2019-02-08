@@ -449,11 +449,13 @@ while alpha < 256:
     black_screen.set_alpha(alpha)
     window.blit(black_screen, (0,0))
     if is_recording:
-        record_video()
+        filename = "Snaps/%04d.png" % file_num
+        pygame.image.save(window, filename)
+        file_num = file_num + 1
 
 #PROCESS VIDEO
 
 if is_recording:
     from subprocess import call
-    meth = "python3 tk-img2video.py -d ./images -o ./videos/new_video.mp4 -e jpg -t " + str(FPS)
+    meth = "python img2video.py -d ./images -o ./videos/new_video.mp4 -e jpg -t " + str(FPS)
     call([meth.split()])
