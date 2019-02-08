@@ -226,7 +226,9 @@ while alpha < 256:
     window.blit(text_surface, (0,0))
     alpha = alpha + fade_speed
     if is_recording:
-        record_video()
+        filename = "Snaps/%04d.png" % file_num
+        pygame.image.save(window, filename)
+        file_num = file_num + 1
 
 #REMAIN
 current_time = 0
@@ -243,7 +245,9 @@ while current_time < next_msg_time:
     window_dims[1]/2 - text_sml.get_height() // 2 + window_dims[1]/16))
     current_time = current_time + frame_length
     if is_recording:
-        record_video()
+        filename = "Snaps/%04d.png" % file_num
+        pygame.image.save(window, filename)
+        file_num = file_num + 1
 
 #FADE OUT
 alpha = 255
@@ -262,7 +266,9 @@ while alpha > 0:
     window.blit(text_surface, (0,0))
     alpha = alpha - fade_speed
     if is_recording:
-        record_video()
+        filename = "Snaps/%04d.png" % file_num
+        pygame.image.save(window, filename)
+        file_num = file_num + 1
 
 #CLEANUP
 del(text_big, text_med, text_sml, text_surface, alpha)
@@ -334,7 +340,9 @@ if not live_input:
         finally:
             # Save every frame
             if is_recording:
-                record_video()
+                filename = "Snaps/%04d.png" % file_num
+                pygame.image.save(window, filename)
+                file_num = file_num + 1
 
             # Process Events
             for e in pygame.event.get():
@@ -405,7 +413,9 @@ else:
         finally:
             # Save every frame
             if is_recording:
-                record_video()
+                filename = "Snaps/%04d.png" % file_num
+                pygame.image.save(window, filename)
+                file_num = file_num + 1
 
             # Process Events
             for e in pygame.event.get():

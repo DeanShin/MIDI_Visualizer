@@ -28,5 +28,5 @@ class Button(Interactable):
                     return 2
         return 0
 
-    def update(self, (x, y)):
-        Interactable.update(self, (x, y))
+    def update(self, mouse_pos):
+        Interactable.update(self, mouse_pos)

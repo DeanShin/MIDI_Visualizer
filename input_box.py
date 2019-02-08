@@ -41,9 +41,9 @@ class InputBox(Interactable):
                 self.text_surface = self.font.render(self.text, True, self.color)
 
 
-    def update(self, (x,y)):
+    def update(self, mouse_pos):
         # Resize the box if the text is too long.
         width = max(20, self.text_surface.get_width()+10)
         self.rect.w = width
         if not self.active:
-            Interactable.update(self, (x,y))
+            Interactable.update(self, mouse_pos)

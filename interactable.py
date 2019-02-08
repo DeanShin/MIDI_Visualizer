@@ -1,7 +1,7 @@
 class Interactable:
 
-    def update(self, (x, y)):
-        if self.rect.collidepoint(x, y):
+    def update(self, mouse_pos):
+        if self.rect.collidepoint(mouse_pos):
             mouse_hovering = True
         else:
             mouse_hovering = False
