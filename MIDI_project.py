@@ -41,6 +41,7 @@ else:
 pygame.init()
 pygame.display.set_caption('MIDI Project')
 
+#GET SCREENSIZE
 try:
     from screeninfo import get_monitors
     for i, m in enumerate(get_monitors()):
@@ -60,6 +61,7 @@ FPS = 60.0
 frame_length = 1/FPS
 clock = pygame.time.Clock()
 
+#SET MIDI OUTPUT
 pygame.midi.init()
 try:
     player = pygame.midi.Output(0)
@@ -81,13 +83,13 @@ def button_funcs(event):
             elif e == 2:
                 return True
     for button in buttons:
-        button.update(pygame, pygame.mouse.get_pos())
+        button.update(pygame.mouse.get_pos())
 
 def input_box_funcs(event):
     for box in input_boxes:
         box.handle_event(pygame, event)
     for box in input_boxes:
-        box.update()
+        box.update(pygame.mouse.get_pos())
 
 def hex_to_rgb(value):
     value = value.lstrip('#')
@@ -114,10 +116,10 @@ def record_video():
     file_num = file_num + 1
 
 def spawnButton(x, y, w, h, text):
-    buttons.append(Button(pygame, int(window_dims[1] / 48), x, y, w, h, (255,255,255), (127,255,127), text))
+    buttons.append(Button(pygame, int(window_dims[1] / 48), x, y, w, h, (255,255,255), (127,255,127), (127,255,127), text))
 
 def spawnInputBox(x, y, w, h, text):
-    input_boxes.append(InputBox(pygame, int(window_dims[1] / 48), x, y, w, h, (255,255,255), (127,255,127), text))
+    input_boxes.append(InputBox(pygame, int(window_dims[1] / 48), x, y, w, h, (255,255,255), (127,255,127), (127,255,127), text))
 
 
 # OPTION SCREEN
@@ -149,7 +151,11 @@ while opt_scr is True:
     for box in input_boxes:
         box.draw(pygame, window)
 
-filepath = input_boxes[0].get_text()
+filepath = input_boxes[0].text
+title = input_boxes[1].text
+subtitle = input_boxes[2].text
+composer = input_boxes[3].text
+arranger = input_boxes[4].text
 
 try:
     mid = mido.MidiFile(filepath)
@@ -157,11 +163,6 @@ except:
     print("Invalid Filepath")
     filepath = "./examples/midifiles/test.mid"
     mid = mido.MidiFile(filepath)
-
-title = input_boxes[1].get_text()
-subtitle = input_boxes[2].get_text()
-composer = input_boxes[3].get_text()
-arranger = input_boxes[4].get_text()
 
 min_vel = 127
 max_vel = 0
@@ -184,11 +185,13 @@ if is_recording:
     except OSError:
         pass
 
-del(opt_scr, buttons, input_boxes)
+#CLEANUP
 
+del(opt_scr, buttons, input_boxes)
 
 col1 = hex_to_rgb(args["col1"])
 col2 = hex_to_rgb(args["col2"])
+
 i = 0
 note_paths = []
 while i < 89:
@@ -197,7 +200,7 @@ while i < 89:
     i += 1
 del(i, col1, col2)
 
-# INTRO
+#INTRO
 font_big = pygame.font.Font("./resources/fonts/SoukouMincho.ttf", int(window_dims[1] / 9))
 text_big = font_big.render(title, True, (255, 255, 255))
 font_med = pygame.font.Font("./resources/fonts/SoukouMincho.ttf", int(window_dims[1] / 12))
@@ -226,7 +229,9 @@ while alpha < 256:
     window.blit(text_surface, (0,0))
     alpha = alpha + fade_speed
     if is_recording:
-        record_video()
+        filename = "Snaps/%04d.png" % file_num
+        pygame.image.save(window, filename)
+        file_num = file_num + 1
 
 #REMAIN
 current_time = 0
@@ -243,7 +248,9 @@ while current_time < next_msg_time:
     window_dims[1]/2 - text_sml.get_height() // 2 + window_dims[1]/16))
     current_time = current_time + frame_length
     if is_recording:
-        record_video()
+        filename = "Snaps/%04d.png" % file_num
+        pygame.image.save(window, filename)
+        file_num = file_num + 1
 
 #FADE OUT
 alpha = 255
@@ -262,7 +269,9 @@ while alpha > 0:
     window.blit(text_surface, (0,0))
     alpha = alpha - fade_speed
     if is_recording:
-        record_video()
+        filename = "Snaps/%04d.png" % file_num
+        pygame.image.save(window, filename)
+        file_num = file_num + 1
 
 #CLEANUP
 del(text_big, text_med, text_sml, text_surface, alpha)
@@ -334,7 +343,9 @@ if not live_input:
         finally:
             # Save every frame
             if is_recording:
-                record_video()
+                filename = "Snaps/%04d.png" % file_num
+                pygame.image.save(window, filename)
+                file_num = file_num + 1
 
             # Process Events
             for e in pygame.event.get():
@@ -405,7 +416,9 @@ else:
         finally:
             # Save every frame
             if is_recording:
-                record_video()
+                filename = "Snaps/%04d.png" % file_num
+                pygame.image.save(window, filename)
+                file_num = file_num + 1
 
             # Process Events
             for e in pygame.event.get():
@@ -439,11 +452,13 @@ while alpha < 256:
     black_screen.set_alpha(alpha)
     window.blit(black_screen, (0,0))
     if is_recording:
-        record_video()
+        filename = "Snaps/%04d.png" % file_num
+        pygame.image.save(window, filename)
+        file_num = file_num + 1
 
 #PROCESS VIDEO
 
 if is_recording:
     from subprocess import call
-    meth = "python3 tk-img2video.py -d ./images -o ./videos/new_video.mp4 -e jpg -t " + str(FPS)
+    meth = "python img2video.py -d ./images -o ./videos/new_video.mp4 -e jpg -t " + str(FPS)
     call([meth.split()])
