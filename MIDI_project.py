@@ -41,6 +41,7 @@ else:
 pygame.init()
 pygame.display.set_caption('MIDI Project')
 
+#GET SCREENSIZE
 try:
     from screeninfo import get_monitors
     for i, m in enumerate(get_monitors()):
@@ -60,6 +61,7 @@ FPS = 60.0
 frame_length = 1/FPS
 clock = pygame.time.Clock()
 
+#SET MIDI OUTPUT
 pygame.midi.init()
 try:
     player = pygame.midi.Output(0)
@@ -150,6 +152,10 @@ while opt_scr is True:
         box.draw(pygame, window)
 
 filepath = input_boxes[0].text
+title = input_boxes[1].text
+subtitle = input_boxes[2].text
+composer = input_boxes[3].text
+arranger = input_boxes[4].text
 
 try:
     mid = mido.MidiFile(filepath)
@@ -157,11 +163,6 @@ except:
     print("Invalid Filepath")
     filepath = "./examples/midifiles/test.mid"
     mid = mido.MidiFile(filepath)
-
-title = input_boxes[1].text
-subtitle = input_boxes[2].text
-composer = input_boxes[3].text
-arranger = input_boxes[4].text
 
 min_vel = 127
 max_vel = 0
@@ -184,11 +185,13 @@ if is_recording:
     except OSError:
         pass
 
-del(opt_scr, buttons, input_boxes)
+#CLEANUP
 
+del(opt_scr, buttons, input_boxes)
 
 col1 = hex_to_rgb(args["col1"])
 col2 = hex_to_rgb(args["col2"])
+
 i = 0
 note_paths = []
 while i < 89:
@@ -197,7 +200,7 @@ while i < 89:
     i += 1
 del(i, col1, col2)
 
-# INTRO
+#INTRO
 font_big = pygame.font.Font("./resources/fonts/SoukouMincho.ttf", int(window_dims[1] / 9))
 text_big = font_big.render(title, True, (255, 255, 255))
 font_med = pygame.font.Font("./resources/fonts/SoukouMincho.ttf", int(window_dims[1] / 12))

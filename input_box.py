@@ -12,10 +12,11 @@ class InputBox(Interactable):
         self.ic = ic
         self.color = ic
 
+        self.default_text = text
         self.thickness = 2
         self.text_pos = (self.rect.x+5, self.rect.y+5)
         self.active = False
-        self.default = text
+
 
     def handle_event(self, pygame, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -29,7 +30,7 @@ class InputBox(Interactable):
             self.color = self.ac if self.active else self.ic
         if event.type == pygame.KEYDOWN:
             if self.active:
-                if self.text == self.default:
+                if self.text == self.default_text:
                     self.text = ''
                 if event.key == pygame.K_RETURN:
                     print(self.text)
