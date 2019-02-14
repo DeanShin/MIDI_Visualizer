@@ -6,7 +6,7 @@ class Button(Interactable):
         self.rect = pygame.Rect(x, y, w, h)
         self.text = text
         self.font = pygame.font.Font("resources/fonts/SoukouMincho.ttf", fontsize)
-        self.text_surface = self.font.render(text, True, ic)
+        self.text_surface = self.font.render(text, True, ic, (63,63,63))
         self.ac = ac
         self.hc = hc
         self.ic = ic

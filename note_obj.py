@@ -15,13 +15,14 @@ class NoteObj():
         self.color = (int(col1[0] + lin_map_vel * (col2[0] - col1[0])), \
         int(col1[1] + lin_map_vel * (col2[1] - col1[1])), \
         int(col1[2] + lin_map_vel * (col2[2] - col1[2])))
-        self.thickness = 2
+        self.thickness = 1
         self.growing = True
         self.shrinking = False
         self.is_sustain = True
         if is_sustain is True:
             self.x = 0
             self.color = (47, 47, 47)
+        
 
     def stop_growing(self, offset):
         self.growing = False
@@ -43,6 +44,4 @@ class NoteObj():
         #innards
         pygame.draw.rect(window, self.color, (self.x, self.y, self.width, self.height), 0)
         #shell
-        pygame.draw.rect(window, (0, 0, 0), (self.x, self.y, self.width, self.height), self.thickness)
-        #if self.is_sustain is True:
-        
+        pygame.draw.rect(window, (127, 127, 127), (self.x, self.y, self.width, self.height), self.thickness)

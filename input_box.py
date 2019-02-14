@@ -28,18 +28,22 @@ class InputBox(Interactable):
                 self.active = False
             # Change the current color of the input box.
             self.color = self.ac if self.active else self.ic
+            self.text_surface = self.font.render(self.text, True, self.color, (63,63,63))
         if event.type == pygame.KEYDOWN:
             if self.active:
                 if self.text == self.default_text:
                     self.text = ''
                 if event.key == pygame.K_RETURN:
                     print(self.text)
+                    self.active = False
+                    # Change the current color of the input box.
+                    self.color = self.ac if self.active else self.ic
                 elif event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
                 else:
                     self.text += event.unicode
                 # Re-render the text.
-                self.text_surface = self.font.render(self.text, True, self.color)
+                self.text_surface = self.font.render(self.text, True, self.color, (63,63,63))
 
 
     def update(self, mouse_pos):

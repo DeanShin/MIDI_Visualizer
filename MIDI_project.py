@@ -186,7 +186,6 @@ if is_recording:
         pass
 
 #CLEANUP
-
 del(opt_scr, buttons, input_boxes)
 
 col1 = hex_to_rgb(args["col1"])
@@ -202,11 +201,11 @@ del(i, col1, col2)
 
 #INTRO
 font_big = pygame.font.Font("./resources/fonts/SoukouMincho.ttf", int(window_dims[1] / 9))
-text_big = font_big.render(title, True, (255, 255, 255))
+text_big = font_big.render(title, True, (255, 255, 255), background)
 font_med = pygame.font.Font("./resources/fonts/SoukouMincho.ttf", int(window_dims[1] / 12))
-text_med = font_med.render(subtitle, True, (255, 255, 255))
+text_med = font_med.render(subtitle, True, (255, 255, 255), background)
 font_sml = pygame.font.Font("./resources/fonts/SoukouMincho.ttf", int(window_dims[1] / 24))
-text_sml = font_sml.render("Composed by " + composer + ", Arranged by " + arranger + ".", True, (255,255,255))
+text_sml = font_sml.render("Composed by " + composer + ", Arranged by " + arranger + ".", True, (255,255,255), background)
 
 del(title, subtitle, composer, arranger)
 text_surface = pygame.Surface((window_dims[0], window_dims[1] * 2/3))
