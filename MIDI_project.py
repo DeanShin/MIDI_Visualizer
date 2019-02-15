@@ -111,7 +111,7 @@ def draw_all():
         note_path.draw_piano(pygame, window)
 
 def record_video():
-    filename = "Snaps/%04d.png" % file_num
+    filename = "Snaps/%05d.png" % file_num
     pygame.image.save(window, filename)
     file_num = file_num + 1
 
