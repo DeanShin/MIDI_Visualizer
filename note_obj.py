@@ -31,7 +31,7 @@ class NoteObj():
     def start_shrinking(self):
         self.shrinking = True
 
-    def move(self):
+    def update(self):
         if self.growing:
             self.height += self.change_y
         else:

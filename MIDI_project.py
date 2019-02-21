@@ -18,6 +18,8 @@ from note_obj import NoteObj
 from button import Button
 from input_box import InputBox
 
+BUBBLES = False
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--rfd", default="N", required=False, help="bool  record notes live from a connected device")
 parser.add_argument("--tbs", default="1", required=False, help="float  time before start")
@@ -28,6 +30,7 @@ parser.add_argument("--col1", default="#FFFFFF", required=False, help="color (he
 parser.add_argument("--col2", default="#000000", required=False, help="color (hex) of highest velocity notes")
 args = parser.parse_args()
 args = vars(args)
+del(parser)
 
 if args["rfd"] is "Y":
     live_input = True
@@ -104,7 +107,15 @@ def lin_map_vel(velocity):
 
 def draw_all():
     window.fill(background)
-    for note_path in note_paths:
+    for j, note_path in enumerate(note_paths):
+        if j == 1:
+            i = 3
+            while i < 88:
+                pygame.draw.line(window, (71,71,71), (int(window_dims[0]*i/88), 0), (int(window_dims[0]*i/88), window_dims[1]))
+                i += 12
+            if BUBBLES:
+                for note_path in note_paths:
+                    note_path.draw_bubbles(pygame, window)
         note_path.update(pygame, window, player)
     pygame.draw.rect(window, background, (0, int(window_dims[1]*5/6), window_dims[0], int(window_dims[1]/6)), 0)
     for note_path in note_paths:
@@ -150,8 +161,12 @@ while opt_scr is True:
         button.draw(pygame, window)
     for box in input_boxes:
         box.draw(pygame, window)
-
+ 
 filepath = input_boxes[0].text
+
+if filepath[-4:] != '.mid':
+    filepath = filepath + '.mid'
+
 title = input_boxes[1].text
 subtitle = input_boxes[2].text
 composer = input_boxes[3].text
@@ -195,7 +210,7 @@ i = 0
 note_paths = []
 while i < 89:
     #i - 1 in NotePath() accounts for NotePath 0 being the path for the pedal
-    note_paths.append(NotePath(i - 1, window_dims, int(args["spd"]), col1, col2))
+    note_paths.append(NotePath(i - 1, window_dims, int(args["spd"]), col1, col2, BUBBLES))
     i += 1
 del(i, col1, col2)
 
@@ -228,7 +243,7 @@ while alpha < 256:
     window.blit(text_surface, (0,0))
     alpha = alpha + fade_speed
     if is_recording:
-        filename = "Snaps/%04d.png" % file_num
+        filename = "Snaps/%05d.png" % file_num
         pygame.image.save(window, filename)
         file_num = file_num + 1
 
@@ -247,7 +262,7 @@ while current_time < next_msg_time:
     window_dims[1]/2 - text_sml.get_height() // 2 + window_dims[1]/16))
     current_time = current_time + frame_length
     if is_recording:
-        filename = "Snaps/%04d.png" % file_num
+        filename = "Snaps/%05d.png" % file_num
         pygame.image.save(window, filename)
         file_num = file_num + 1
 
@@ -268,7 +283,7 @@ while alpha > 0:
     window.blit(text_surface, (0,0))
     alpha = alpha - fade_speed
     if is_recording:
-        filename = "Snaps/%04d.png" % file_num
+        filename = "Snaps/%05d.png" % file_num
         pygame.image.save(window, filename)
         file_num = file_num + 1
 
@@ -342,7 +357,7 @@ if not live_input:
         finally:
             # Save every frame
             if is_recording:
-                filename = "Snaps/%04d.png" % file_num
+                filename = "Snaps/%05d.png" % file_num
                 pygame.image.save(window, filename)
                 file_num = file_num + 1
 
@@ -415,7 +430,7 @@ else:
         finally:
             # Save every frame
             if is_recording:
-                filename = "Snaps/%04d.png" % file_num
+                filename = "Snaps/%05d.png" % file_num
                 pygame.image.save(window, filename)
                 file_num = file_num + 1
 
@@ -451,7 +466,7 @@ while alpha < 256:
     black_screen.set_alpha(alpha)
     window.blit(black_screen, (0,0))
     if is_recording:
-        filename = "Snaps/%04d.png" % file_num
+        filename = "Snaps/%05d.png" % file_num
         pygame.image.save(window, filename)
         file_num = file_num + 1
 
