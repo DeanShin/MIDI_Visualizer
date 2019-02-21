@@ -26,8 +26,8 @@ parser.add_argument("--tbs", default="1", required=False, help="float  time befo
 parser.add_argument("--tbe", default="3", required=False, help="float  time before end")
 parser.add_argument("--spd", default="5", required=False, help="int  speed of notes")
 parser.add_argument("--rcd", default="N", required=False, help="bool  recording, inputs Y/N")
-parser.add_argument("--col1", default="#FFFFFF", required=False, help="color (hex) of lowest velocity notes")
-parser.add_argument("--col2", default="#000000", required=False, help="color (hex) of highest velocity notes")
+parser.add_argument("--col1", default="#DD33EE", required=False, help="color (hex) of lowest velocity notes")
+parser.add_argument("--col2", default="#00AA66", required=False, help="color (hex) of highest velocity notes")
 args = parser.parse_args()
 args = vars(args)
 del(parser)
@@ -133,8 +133,7 @@ def spawnInputBox(x, y, w, h, text):
     input_boxes.append(InputBox(pygame, int(window_dims[1] / 48), x, y, w, h, (255,255,255), (127,255,127), (127,255,127), text))
 
 
-# OPTION SCREEN
-
+#OPTION SCREEN
 spawnButton(window_dims[0] * 13 / 16 , window_dims[1] * 14 / 16 , window_dims[0] / 8 , window_dims[1] / 16 , "Exit Program")
 spawnButton(window_dims[0] * 1 / 16 , window_dims[1] * 14 / 16 , window_dims[0] / 8 , window_dims[1] / 16 , "Start Program")
 spawnInputBox(window_dims[0] * 1 / 16 , window_dims[1] * 1 / 16 , window_dims[0] , window_dims[1] / 32 , "Filepath")
@@ -291,7 +290,6 @@ while alpha > 0:
 del(text_big, text_med, text_sml, text_surface, alpha)
 
 #THE MEAT OF THE PROGRAM
-
 mid = mido.MidiFile(filepath)
 del(filepath)
 iterable = iter(mid)
@@ -449,12 +447,10 @@ else:
                 print("END")
                 break
 
-# OUTRO
-
+#OUTRO
 print("Outro")
 
 #FADE TO BLACK
-
 black_screen = pygame.Surface((window_dims[0], window_dims[1]))
 
 alpha = 0
@@ -471,7 +467,6 @@ while alpha < 256:
         file_num = file_num + 1
 
 #PROCESS VIDEO
-
 if is_recording:
     from subprocess import call
     meth = "python img2video.py -d ./images -o ./videos/new_video.mp4 -e jpg -t " + str(FPS)

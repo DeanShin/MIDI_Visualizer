@@ -1,8 +1,8 @@
 class Bubble():
-    def __init__(self, pygame, window, color, gro_spd, x, y, radius):
+    def __init__(self, pygame, window, color, spd, x, y, radius):
         self.color = color
         self.alpha = 255
-        self.gro_spd = gro_spd
+        self.spd = spd
         self.x = x
         self.y = y
         self.radius = radius
@@ -10,8 +10,8 @@ class Bubble():
         self.surface.set_colorkey((0,0,0))
 
     def update(self):
-        self.radius += int(self.gro_spd / 8)
-        self.alpha -= int(self.gro_spd / 8)
+        self.radius += int(self.spd / 8)
+        self.alpha -= int(self.spd / 8)
         if self.alpha <= 0:
             return True
 

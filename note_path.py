@@ -3,16 +3,17 @@ from piano_roll_obj import PianoRollObj
 from bubble import Bubble
 
 #this file holds the NotePath class
-
 class NotePath():
 
     def __init__(self, note_id, window, spd, col1, col2, BUBBLES):
         self.is_sustain = False
         self.piano_y_pos = int(window[1] * 5 / 6)
+        #PEDAL PATH
         if note_id is -1:
             self.width = window[0]
             self.x = 0
             self.is_sustain = True
+        #NOTE PATH
         else:
             self.width = window[0] / 88
             self.x = note_id * self.width
@@ -27,7 +28,6 @@ class NotePath():
         self.col1 = col1
         self.col2 = col2
         self.do_bubbles = BUBBLES
-
 
     def toggle_note(self, channel, velocity, lin_map_vel, offset):
         if self.start_note:
@@ -59,7 +59,7 @@ class NotePath():
                     self.piano_roll_obj.toggle(i.color)
                     player.note_on(i.note_id + 21, i.velocity, i.channel)
                     if self.do_bubbles:
-                        self.bubbles.append(Bubble(pygame, window, self.notes[0].color, self.notes[0].velocity, \
+                        self.bubbles.append(Bubble(pygame, window, i.color, i.velocity, \
                             self.x + self.width/2, self.piano_y_pos, self.width/2))
             # stops playing and deletes note when note passes piano roll
             if i.y >= self.piano_y_pos:
