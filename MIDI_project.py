@@ -18,7 +18,7 @@ from note_obj import NoteObj
 from button import Button
 from input_box import InputBox
 
-BUBBLES = False
+BUBBLES = True
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--rfd", default="N", required=False, help="bool  record notes live from a connected device")
@@ -60,7 +60,7 @@ except:
 
 window = pygame.display.set_mode(window_dims)
 background = (63,63,63)
-FPS = 60.0
+FPS = 30.0
 frame_length = 1/FPS
 clock = pygame.time.Clock()
 
@@ -72,7 +72,7 @@ except:
     player = pygame.midi.Output(1)
 player.set_instrument(0)
 
-#mido.merge_tracks(mid.tracks)
+
 
 buttons = []
 input_boxes = []
@@ -160,7 +160,7 @@ while opt_scr is True:
         button.draw(pygame, window)
     for box in input_boxes:
         box.draw(pygame, window)
- 
+
 filepath = input_boxes[0].text
 
 if filepath[-4:] != '.mid':
@@ -177,6 +177,8 @@ except:
     print("Invalid Filepath")
     filepath = "./examples/midifiles/test.mid"
     mid = mido.MidiFile(filepath)
+
+mido.merge_tracks(mid.tracks)
 
 min_vel = 127
 max_vel = 0
@@ -303,7 +305,7 @@ if not live_input:
     while True:
         try:
             while current_time >= next_msg_time and not stop_reading:
-                print(current_time - next_msg_time)
+                #print(current_time - next_msg_time)
                 #print("Pixels to offset: " + str((current_time - next_msg_time) / frame_length * spd))
                 print(msg)
                 if msg.type == 'note_on' or msg.type == 'note_off':
