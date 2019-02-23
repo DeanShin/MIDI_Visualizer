@@ -31,8 +31,10 @@ This will connect to any MIDI synthesizers you have downloaded--which if you hav
 ## Code Description
 
 MIDI_Visualizer uses a couple of external libraries--the most important one being Mido.  
-Normally, when you try to open a MIDI file in, say, a text editor, it ends up looking like a jumbled *mess*:
+Normally, when you try to open a MIDI file in, say, a text editor, it ends up looking like a jumbled *mess*:  
+
 ![jumbled mess](/examples/screenshots/example-of-a-raw-midi-file.png)  
+
 Not only that, but the MIDI docs are pretty unparseable themselves.  
 
 This is why I decided to use an external library to parse my MIDI files.  
