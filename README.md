@@ -37,7 +37,25 @@ Normally, when you try to open a MIDI file in, say, a text editor, it ends up lo
 
 Not only that, but the MIDI docs are pretty unparseable themselves.  
 
-This is why I decided to use an external library to parse my MIDI files.  
-After researching my various options, **mido** seemed to be the simplest to implement into a program.
+This is why I decided to use an external library to parse my MIDI files. After researching my various options, **Mido** seemed to be the simplest to implement into a program.  
+
 ```import mido```  
-From the Mido docs, "Mido is a library for working with MIDI messages and ports. It’s designed to be as straight forward and Pythonic as possible." 
+
+From the Mido docs, "Mido is a library for working with MIDI messages and ports. It’s designed to be as straight forward and Pythonic as possible." The Mido site has a couple of example programs, one of which served as the basis for my code:  
+
+```
+mid = mido.MidiFile('song.mid')
+for msg in mid.play():
+    port.send(msg)
+```
+
+Which I changed into  
+
+```
+mid = mido.MidiFile(filepath)
+for msg in mid.play():
+    print(msg)
+```
+
+The first line, ```mid = mido.MidiFile(pathToMidi)```, makes ```MidiFile``` object ```mid``` from a MIDI file located at a certain ```filepath```. ```mid``` then contains ```messages```, which can then be iterated through, i.e. ```for msg in mid.play()```.  
+A message can hold lots of different types of information: the two primary types being regular ```messages``` and ```meta_messages```.
