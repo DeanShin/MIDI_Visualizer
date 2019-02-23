@@ -59,7 +59,7 @@ for msg in mid.play():
 
 The first line, ```mid = mido.MidiFile(pathToMidi)```, makes ```MidiFile``` object ```mid``` from a MIDI file located at a certain ```filepath```. ```mid``` contains ```messages```, which can then be iterated through, i.e. ```for msg in mid.play()```.  
 
-```mid.play()``` is a function that outputs messages, waiting for the correct amount of time according to each message's ```time``` attribute.  
+```mid.play()``` is a function that outputs messages, waiting for the correct amount of time according to each message's ```time``` attribute. This function is good and all for normal and simple usage, however as you'll see later, there are many problems that appear later.
 
 ![phase1](/examples/screenshots/phase1.png)  
 
@@ -68,19 +68,40 @@ The first line, ```mid = mido.MidiFile(pathToMidi)```, makes ```MidiFile``` obje
 With a couple (read: _lots_) of `if` statements, you can easily separate all message types into performing unique functions:
 ```
 if msg.type == 'note_on' or msg.type == 'note_off':
+    #DO SOMETHING
     pass
 elif msg.is_meta == False:
     if msg.type == 'control_change':
-        #sustain pedal
+        #SUSTAIN PEDAL
         if msg.control == 64:
-        pass
+            pass
         else:
             print("Unimplemented control change" + "\n" + "\n")
-    elif msg.type == 'program_change':
-        pass
     else:
         print("Unimplemented message type" + "\n" + "\n")
 else:
     #is metaMessage
     print("Unimplemented MetaMessage" + "\n \n")
+```  
+
+The next step after parsing the MIDI files is to find some way to display them. Following the tried and true methods, I took programs such as Synthesia as inspiration for my own program.  
+But first, how do you display something in python? The answer is a library such as ```pygame```.  
+Pygame is a bit complicated to get in to, however once you learn the basics, it is extremely easy to quickly implement visuals into a program.  
+There are a couple of fundamental lines of code that are necessary for many programs in ```pygame```.  
+To initialize,  
+```
+pygame.init()
+pygame.display.set_caption('MIDI Project')
+window_dims = (1760, 990) # width and height
+window = pygame.display.set_mode(window_dims)
+background = (63,63,63) # a color, in this case, in RGB.
+FPS = 30.0
+clock = pygame.time.Clock()
+```  
+then, in a loop,
+```
+while True:
+    pygame.display.flip()
+    clock.tick(FPS)
+    window.fill(background)
 ```
