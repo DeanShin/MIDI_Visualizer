@@ -85,23 +85,26 @@ else:
 ```  
 
 The next step after parsing the MIDI files is to find some way to display them. Following the tried and true methods, I took programs such as Synthesia as inspiration for my own program.  
+  
 But first, how do you display something in python? The answer is a library such as ```pygame```.  
-Pygame is a bit complicated to get in to, however once you learn the basics, it is extremely easy to quickly implement visuals into a program.  
-There are a couple of fundamental lines of code that are necessary for many programs in ```pygame```.  
-To initialize,  
+  
+Pygame is a bit complicated to get in to, however once you learn the basics, it is extremely easy to quickly implement visuals into a program. There are a couple of fundamental lines of code that are necessary for many programs in ```pygame```.  
+  
+To initialize,
 ```
-pygame.init()
-pygame.display.set_caption('MIDI Project')
-window_dims = (1760, 990) # width and height
-window = pygame.display.set_mode(window_dims)
-background = (63,63,63) # a color, in this case, in RGB.
-FPS = 30.0
-clock = pygame.time.Clock()
+pygame.init()                                   # initialize all imported pygame modules
+pygame.display.set_caption('MIDI Project')      # set the current window caption
+window_dims = (1760, 990)                       # width and height
+window = pygame.display.set_mode(window_dims)   # initialize a window or screen for display
+background = (63,63,63)                         # a color, in this case, in RGB.
+FPS = 30.0                                      # frames per second
+clock = pygame.time.Clock()                     # create an object to help track time
 ```  
 then, in a loop,
 ```
 while True:
-    pygame.display.flip()
-    clock.tick(FPS)
-    window.fill(background)
-```
+    pygame.display.flip()                       # update the full display Surface to the screen
+    clock.tick(FPS)                             # update the clock
+    window.fill(background)                     # fill Surface with a solid color
+```  
+This will create a basic gray background that updates at a max of 30.0 frames per second. You can then ```pygame.Surface.blit()``` one surface onto another surface (think of it like pasting one image on top of another), or ```pygame.draw.rect()``` to draw a rectangle onto a given surface.
