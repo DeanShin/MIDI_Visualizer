@@ -57,5 +57,30 @@ for msg in mid.play():
     print(msg)
 ```
 
-The first line, ```mid = mido.MidiFile(pathToMidi)```, makes ```MidiFile``` object ```mid``` from a MIDI file located at a certain ```filepath```. ```mid``` then contains ```messages```, which can then be iterated through, i.e. ```for msg in mid.play()```.  
-A message can hold lots of different types of information: the two primary types being regular ```messages``` and ```meta_messages```.
+The first line, ```mid = mido.MidiFile(pathToMidi)```, makes ```MidiFile``` object ```mid``` from a MIDI file located at a certain ```filepath```. ```mid``` contains ```messages```, which can then be iterated through, i.e. ```for msg in mid.play()```.  
+
+```mid.play()``` is a function that outputs messages, waiting for the correct amount of time according to each message's ```time``` attribute.  
+
+![phase1](/examples/screenshots/phase1.png)  
+
+(Note: there are several types of messages, the largest sub-divisions being ```messages``` and ```meta_messages```, ```meta_messages``` hold special information such as when the pedal turns on/off, or lyrics, or the name of an instrument; therefore the ```mid.play()``` function by default does not output ```meta_messages```.)  
+
+With a couple (read: _lots_) of `if` statements, you can easily separate all message types into performing unique functions:
+```
+if msg.type == 'note_on' or msg.type == 'note_off':
+    pass
+elif msg.is_meta == False:
+    if msg.type == 'control_change':
+        #sustain pedal
+        if msg.control == 64:
+        pass
+        else:
+            print("Unimplemented control change" + "\n" + "\n")
+    elif msg.type == 'program_change':
+        pass
+    else:
+        print("Unimplemented message type" + "\n" + "\n")
+else:
+    #is metaMessage
+    print("Unimplemented MetaMessage" + "\n \n")
+```
