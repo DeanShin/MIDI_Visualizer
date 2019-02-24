@@ -83,7 +83,9 @@ else:
     #is metaMessage
     print("Unimplemented MetaMessage" + "\n \n")
 ```
+
 ---
+
 The next step after parsing the MIDI files is to find some way to display them. Following the tried and true methods, I took programs such as Synthesia as inspiration for my own program.  
 
 But first of all, how do you display something in python? The answer is a library such as ```pygame```.  
@@ -111,6 +113,8 @@ This will create a basic gray background that updates at a max of 30.0 frames pe
 
 The majority of my visualizer is comprised of rectangles, so ```pygame.draw.rect()``` gets a _lot_ of use.  
 
+---
+
 A NotePath consists of one piano key and the notes that fall onto it. As there are 88 keys on your standard piano, (plus one for the sustain pedal) there are 89 NotePath objects in the array ```note_paths[]```.
 ```python
 i = 0
@@ -120,15 +124,27 @@ while i < 89:
     note_paths.append(NotePath(i - 1, window_dims, int(args["spd"]), col1, col2, BUBBLES))
     i += 1
 del(i, col1, col2)
-```
+```  
+
 Each ```NotePath``` object holds an array ```notes``` that comprises of active (currently being drawn) ```NoteObj```:  
 ```self.notes = [NoteObj]```  
-...and if it is not the sustain pedal note path, a single ```PianoRollObj```:  
+
+...and a ```PianoRollObj``` corresponding to the position of the NotePath in the array:  
 ```self.piano_roll_obj = PianoRollObj(self.x, note_id, window)```  
-Each ```NoteObj``` falls at a certain speed, and has a certain color calculated according to the ```velocity``` of the note.
+
+Each ```NoteObj``` falls at a certain speed, and has a certain color calculated according the ```velocity``` of the note, with a linear transformation applied to it.
+```python
+def lin_map_vel(velocity):
+    if velocity == 0:
+        return 0
+    else:
+        return (float(velocity - min_vel)/float(max_vel - min_vel + 1))
+```   
 ```python
 # making note color change as velocity changes
-self.color = (int(col1[0] + lin_map_vel * (col2[0] - col1[0])), \
-int(col1[1] + lin_map_vel * (col2[1] - col1[1])), \
-int(col1[2] + lin_map_vel * (col2[2] - col1[2])))
-```
+def __init__(lin_map_vel, col1, col2):
+    self.color = (int(col1[0] + lin_map_vel * (col2[0] - col1[0])), \
+    int(col1[1] + lin_map_vel * (col2[1] - col1[1])), \
+    int(col1[2] + lin_map_vel * (col2[2] - col1[2])))
+```  
+
