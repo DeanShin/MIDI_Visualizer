@@ -82,14 +82,14 @@ elif msg.is_meta == False:
 else:
     #is metaMessage
     print("Unimplemented MetaMessage" + "\n \n")
-```  
+```
+---
+The next step after parsing the MIDI files is to find some way to display them. Following the tried and true methods, I took programs such as Synthesia as inspiration for my own program.  
 
-The next step after parsing the MIDI files is to find some way to display them. Following the tried and true methods, I took programs such as Synthesia as inspiration for my own program.   
-  
-But first, how do you display something in python? The answer is a library such as ```pygame```.  
-  
+But first of all, how do you display something in python? The answer is a library such as ```pygame```.  
+
 Pygame is a bit complicated to get in to, however once you learn the basics, it is extremely easy to quickly implement visuals into a program. There are a couple of fundamental lines of code that are necessary for many programs in ```pygame```.  
-  
+
 To initialize,
 ```python
 pygame.init()                                   # initialize all imported pygame modules
@@ -99,19 +99,19 @@ window = pygame.display.set_mode(window_dims)   # initialize a window or screen 
 background = (63,63,63)                         # a color, in this case, in RGB.
 FPS = 30.0                                      # frames per second
 clock = pygame.time.Clock()                     # create an object to help track time
-```  
+```
 then, in a loop,
 ```python
 while True:
     pygame.display.flip()                       # update the full display Surface to the screen
     clock.tick(FPS)                             # update the clock
     window.fill(background)                     # fill Surface with a solid color
-```  
+```
 This will create a basic gray background that updates at a max of 30.0 frames per second. You can then ```pygame.Surface.blit()``` one surface onto another surface (think of it like pasting one image on top of another), or ```pygame.draw.rect()``` to draw a rectangle onto a given surface.
 
 The majority of my visualizer is comprised of rectangles, so ```pygame.draw.rect()``` gets a _lot_ of use.  
 
-A NotePath consists of one piano key and the notes that fall onto it. As there are 88 keys on your standard piano, (plus one for the sustain pedal) there are 89 NotePath objects in the array ```note_paths[]```.  
+A NotePath consists of one piano key and the notes that fall onto it. As there are 88 keys on your standard piano, (plus one for the sustain pedal) there are 89 NotePath objects in the array ```note_paths[]```.
 ```python
 i = 0
 note_paths = []
@@ -121,4 +121,8 @@ while i < 89:
     i += 1
 del(i, col1, col2)
 ```
+Each NotePath object holds array ```notes``` that comprises of active (currently being drawn) ```NoteObj```:
+```self.notes = [NoteObj]```
+and if it is not the sustain pedal, a single ```PianoRollObj```:
+```self.piano_roll_obj = PianoRollObj(self.x, note_id, window)```
 
