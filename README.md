@@ -15,7 +15,7 @@ In command line, MIDI_Visualizer uses a parser to parse commands from the user.
 ## Known Problems
 
 On MacOS, the code 
-```
+```python
 player = pygame.midi.Output(0)
 player.set_instrument(0)
 ```
@@ -43,7 +43,7 @@ This is why I decided to use an external library to parse my MIDI files. After r
 
 From the Mido docs, "Mido is a library for working with MIDI messages and ports. It’s designed to be as straight forward and Pythonic as possible." The Mido site has a couple of example programs, one of which served as the basis for my code:  
 
-```
+```python
 mid = mido.MidiFile('song.mid')
 for msg in mid.play():
     port.send(msg)
@@ -51,7 +51,7 @@ for msg in mid.play():
 
 Which I changed into  
 
-```
+```python
 mid = mido.MidiFile(filepath)
 for msg in mid.play():
     print(msg)
@@ -66,7 +66,7 @@ The first line, ```mid = mido.MidiFile(pathToMidi)```, makes ```MidiFile``` obje
 (Note: there are several types of messages, the largest sub-divisions being ```messages``` and ```meta_messages```, ```meta_messages``` hold special information such as when the pedal turns on/off, or lyrics, or the name of an instrument; therefore the ```mid.play()``` function by default does not output ```meta_messages```.)  
 
 With a couple (read: _lots_) of `if` statements, you can easily separate all message types into performing unique functions:
-```
+```python
 if msg.type == 'note_on' or msg.type == 'note_off':
     #DO SOMETHING
     pass
@@ -84,14 +84,14 @@ else:
     print("Unimplemented MetaMessage" + "\n \n")
 ```  
 
-The next step after parsing the MIDI files is to find some way to display them. Following the tried and true methods, I took programs such as Synthesia as inspiration for my own program.  
+The next step after parsing the MIDI files is to find some way to display them. Following the tried and true methods, I took programs such as Synthesia as inspiration for my own program.   
   
 But first, how do you display something in python? The answer is a library such as ```pygame```.  
   
 Pygame is a bit complicated to get in to, however once you learn the basics, it is extremely easy to quickly implement visuals into a program. There are a couple of fundamental lines of code that are necessary for many programs in ```pygame```.  
   
 To initialize,
-```
+```python
 pygame.init()                                   # initialize all imported pygame modules
 pygame.display.set_caption('MIDI Project')      # set the current window caption
 window_dims = (1760, 990)                       # width and height
@@ -101,10 +101,24 @@ FPS = 30.0                                      # frames per second
 clock = pygame.time.Clock()                     # create an object to help track time
 ```  
 then, in a loop,
-```
+```python
 while True:
     pygame.display.flip()                       # update the full display Surface to the screen
     clock.tick(FPS)                             # update the clock
     window.fill(background)                     # fill Surface with a solid color
 ```  
 This will create a basic gray background that updates at a max of 30.0 frames per second. You can then ```pygame.Surface.blit()``` one surface onto another surface (think of it like pasting one image on top of another), or ```pygame.draw.rect()``` to draw a rectangle onto a given surface.
+
+The majority of my visualizer is comprised of rectangles, so ```pygame.draw.rect()``` gets a _lot_ of use.  
+
+A NotePath consists of one piano key and the notes that fall onto it. As there are 88 keys on your standard piano, (plus one for the sustain pedal) there are 89 NotePath objects in the array ```note_paths[]```.  
+```python
+i = 0
+note_paths = []
+while i < 89:
+    #i - 1 in NotePath() accounts for NotePath 0 being the path for the pedal
+    note_paths.append(NotePath(i - 1, window_dims, int(args["spd"]), col1, col2, BUBBLES))
+    i += 1
+del(i, col1, col2)
+```
+
