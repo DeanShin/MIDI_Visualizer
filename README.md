@@ -121,8 +121,14 @@ while i < 89:
     i += 1
 del(i, col1, col2)
 ```
-Each NotePath object holds array ```notes``` that comprises of active (currently being drawn) ```NoteObj```:
-```self.notes = [NoteObj]```
-and if it is not the sustain pedal, a single ```PianoRollObj```:
-```self.piano_roll_obj = PianoRollObj(self.x, note_id, window)```
-
+Each ```NotePath``` object holds an array ```notes``` that comprises of active (currently being drawn) ```NoteObj```:  
+```self.notes = [NoteObj]```  
+...and if it is not the sustain pedal note path, a single ```PianoRollObj```:  
+```self.piano_roll_obj = PianoRollObj(self.x, note_id, window)```  
+Each ```NoteObj``` falls at a certain speed, and has a certain color calculated according to the ```velocity``` of the note.
+```python
+# making note color change as velocity changes
+self.color = (int(col1[0] + lin_map_vel * (col2[0] - col1[0])), \
+int(col1[1] + lin_map_vel * (col2[1] - col1[1])), \
+int(col1[2] + lin_map_vel * (col2[2] - col1[2])))
+```
