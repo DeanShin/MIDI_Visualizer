@@ -115,6 +115,16 @@ The majority of my visualizer is comprised of rectangles, so ```pygame.draw.rect
 
 ---
 
+## Structure  
+
+While there are many types of messages and meta_messages, the two most common are `note_on` and `note_off`. Every `note_on` and `note_off` message has 5 variables: `type`, `channel`, `note`, `velocity`, and `time`.
+
+Strangely, many MIDI files do not utilize the ```note_off``` type message. Instead, two ```note_on``` type messages are sent--the first one signifies the start of the note, the second one signifies the end. In this system, you can not activate a note that is already activated.  
+
+```
+
+```
+
 A NotePath consists of one piano key and the notes that fall onto it. As there are 88 keys on your standard piano, (plus one for the sustain pedal) there are 89 NotePath objects in the array ```note_paths[]```.
 ```python
 i = 0
@@ -141,8 +151,8 @@ def lin_map_vel(velocity):
         return (float(velocity - min_vel)/float(max_vel - min_vel + 1))
 ```   
 ```python
-# making note color change as velocity changes
 def __init__(lin_map_vel, col1, col2):
+    # making note color change as velocity changes
     self.color = (int(col1[0] + lin_map_vel * (col2[0] - col1[0])), \
     int(col1[1] + lin_map_vel * (col2[1] - col1[1])), \
     int(col1[2] + lin_map_vel * (col2[2] - col1[2])))
