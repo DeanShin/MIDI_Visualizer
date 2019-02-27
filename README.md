@@ -31,13 +31,13 @@ This will connect to any MIDI synthesizers you have downloaded--which if you hav
 ## Code Description
 
 MIDI_Visualizer uses a couple of external libraries--the most important one being Mido.  
-Normally, when you try to open a MIDI file in, say, a text editor, it ends up looking like a jumbled *mess*:  
+Normally, when you try to open a [**MIDI**](https://www.midi.org/) file in, say, a text editor, it ends up looking like a jumbled *mess*:  
 
 ![jumbled mess](/examples/screenshots/example-of-a-raw-midi-file.png)  
 
 Not only that, but the MIDI docs are pretty unparseable themselves.  
 
-This is why I decided to use an external library to parse my MIDI files. After researching my various options, **Mido** seemed to be the simplest to implement into a program.  
+This is why I decided to use an external library to parse my MIDI files. After researching my various options, [**Mido**](https://mido.readthedocs.io/en/latest/) seemed to be the simplest to implement into a program.  
 
 ```import mido```  
 
@@ -86,9 +86,9 @@ else:
 
 ---
 
-The next step after parsing the MIDI files is to find some way to display them. Following the tried and true methods, I took programs such as Synthesia as inspiration for my own program.  
+The next step after parsing the MIDI files is to find some way to display them. Following the tried and true methods, I took programs such as [**Synthesia**](https://www.synthesiagame.com/) as inspiration for my own program.  
 
-But first of all, how do you display something in python? The answer is a library such as ```pygame```.  
+But first of all, how do you display something in python? The answer is a library such as [**pygame**](https://www.pygame.org/news).  
 
 Pygame is a bit complicated to get in to, however once you learn the basics, it is extremely easy to quickly implement visuals into a program. There are a couple of fundamental lines of code that are necessary for many programs in ```pygame```.  
 
