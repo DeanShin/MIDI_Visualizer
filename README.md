@@ -1,6 +1,7 @@
 # MIDI_Visualizer
 ## ![Example Usage](examples/videos/sample_midi.gif)
 ## Inputs
+### Usage
 
 ```python ./MIDI_project.py --tbs 1.2 --tbe 1.4 --spd 5 --rcd Y```
 
