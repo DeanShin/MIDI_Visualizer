@@ -1,5 +1,5 @@
 # MIDI_Visualizer
-## ![Example Usage](examples/videos/SNK_vid.gif)
+## ![Example Usage](examples/videos/sample_midi.gif)
 ## Inputs
 
 ```python ./MIDI_project.py --tbs 1.2 --tbe 1.4 --spd 5 --rcd Y```
