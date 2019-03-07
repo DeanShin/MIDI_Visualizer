@@ -120,11 +120,32 @@ The majority of my visualizer is comprised of rectangles, so ```pygame.draw.rect
 
 While there are many types of messages and meta_messages, the two most common are `note_on` and `note_off`. Every `note_on` and `note_off` message has 5 variables: `type`, `channel`, `note`, `velocity`, and `time`.
 
+Example messages:  
+
+```
+note_on channel=0 note=90 velocity=80 time=0.03125
+control_change channel=0 control=64 value=127 time=0.05
+```
+a note_on type message
+```python
+type=note_on    # the type of the message
+channel=0       # analagous with TV or radio channels
+note=90         # the pitch of a note, where note=60 equals middle C
+velocity=80     # affects the loudness and timbre of a note, basically, how hard a note is played
+time=0.03125    # how many seconds have passed since the last message
+```  
+a control_change type message
+```python
+type=control_change
+channel=0
+control=64      # what function to perform: i.e. control=64 signifies that the sustain pedal should be sent a value
+value=127       # what value to send
+time=0.05
+```
+
 Strangely, many MIDI files do not utilize the ```note_off``` type message. Instead, two ```note_on``` type messages are sent--the first one signifies the start of the note, the second one signifies the end. In this system, you can not activate a note that is already activated.  
 
-```
-
-```
+With all of this information, I decided to sort my program into NotePaths.
 
 A NotePath consists of one piano key and the notes that fall onto it. As there are 88 keys on your standard piano, (plus one for the sustain pedal) there are 89 NotePath objects in the array ```note_paths[]```.
 ```python
@@ -142,6 +163,25 @@ Each ```NotePath``` object holds an array ```notes``` that comprises of active (
 
 ...and a ```PianoRollObj``` corresponding to the position of the NotePath in the array:  
 ```self.piano_roll_obj = PianoRollObj(self.x, note_id, window)```  
+
+A ```NotePath``` is responsible for spawning, updating, and deleting every `NoteObj` that shares its `note` value. The ```NotePath``` therefore holds much of the information required for doing so:  
+```python
+def __init__(self, note_id, window, spd, col1, col2):
+    self.width = window[0] / 88
+    self.x = note_id * self.width
+    self.y = 0
+    self.spd = spd
+    self.note_id = note_id
+    self.col1 = col1
+    self.col2 = col2
+```  
+Thus when a note needs to be spawned,  
+```python
+def toggle_note(self, channel, velocity, lin_map_vel, offset):
+    self.notes.append(NoteObj(self.note_id, channel, velocity, lin_map_vel, \
+    self.spd, self.is_sustain, self.width, self.col1, self.col2, offset))
+```  
+Only the bare amount of variables are needed.  
 
 Each ```NoteObj``` falls at a certain speed, and has a certain color calculated according the ```velocity``` of the note, with a linear transformation applied to it.
 ```python
