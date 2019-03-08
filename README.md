@@ -121,12 +121,11 @@ The majority of my visualizer is comprised of rectangles, so ```pygame.draw.rect
 While there are many types of messages and meta_messages, the two most common are `note_on` and `note_off`. Every `note_on` and `note_off` message has 5 variables: `type`, `channel`, `note`, `velocity`, and `time`.
 
 Example messages:  
-
 ```
 note_on channel=0 note=90 velocity=80 time=0.03125
 control_change channel=0 control=64 value=127 time=0.05
-```
-a note_on type message
+```  
+a note_on type message:  
 ```python
 type=note_on    # the type of the message
 channel=0       # analagous with TV or radio channels
@@ -134,7 +133,7 @@ note=90         # the pitch of a note, where note=60 equals middle C
 velocity=80     # affects the loudness and timbre of a note, basically, how hard a note is played
 time=0.03125    # how many seconds have passed since the last message
 ```  
-a control_change type message
+a control_change type message:  
 ```python
 type=control_change
 channel=0
@@ -178,12 +177,13 @@ def __init__(self, note_id, window, spd, col1, col2):
 Thus when a note needs to be spawned,  
 ```python
 def toggle_note(self, channel, velocity, lin_map_vel, offset):
+    # append a NoteObj to the notes list
     self.notes.append(NoteObj(self.note_id, channel, velocity, lin_map_vel, \
     self.spd, self.is_sustain, self.width, self.col1, self.col2, offset))
 ```  
-Only the bare amount of variables are needed.  
+Only the bare amount of inputs are needed.  
 
-Each ```NoteObj``` falls at a certain speed, and has a certain color calculated according the ```velocity``` of the note, with a linear transformation applied to it.
+Each ```NoteObj``` falls at a certain speed, and has a certain color calculated according to the ```velocity``` of the note that has been linearly mapped.
 ```python
 def lin_map_vel(velocity):
     if velocity == 0:
@@ -193,9 +193,9 @@ def lin_map_vel(velocity):
 ```   
 ```python
 def __init__(lin_map_vel, col1, col2):
-    # making note color change as velocity changes
+    # making note color change as velocity changes, 
+    # minimum velocity == col1, maximum velocity == col2
     self.color = (int(col1[0] + lin_map_vel * (col2[0] - col1[0])), \
     int(col1[1] + lin_map_vel * (col2[1] - col1[1])), \
     int(col1[2] + lin_map_vel * (col2[2] - col1[2])))
 ```  
-
