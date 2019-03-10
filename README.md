@@ -174,14 +174,24 @@ def __init__(self, note_id, window, spd, col1, col2):
     self.col1 = col1
     self.col2 = col2
 ```  
-Thus when a note needs to be spawned,  
+Thus when a note needs to be spawned, only the bare amount of inputs are needed.  
+
+Whenever a note_on or note_off type message is read, the `NotePath` corresponding with the `note` value of the MIDI message has the function `toggle_note()` called.  
 ```python
-def toggle_note(self, channel, velocity, lin_map_vel, offset):
-    # append a NoteObj to the notes list
-    self.notes.append(NoteObj(self.note_id, channel, velocity, lin_map_vel, \
-    self.spd, self.is_sustain, self.width, self.col1, self.col2, offset))
+if msg.type == 'note_on' or msg.type == 'note_off':
+    #A0 (note_path[1]) is msg.note == 21
+    note_paths[msg.note + 1 - 21].toggle_note(msg.channel, msg.velocity, \
+    lin_map_vel(msg.velocity), int((current_time - next_msg_time) / frame_length * spd))
 ```  
-Only the bare amount of inputs are needed.  
+```
+def toggle_note(self, channel, velocity, lin_map_vel, offset):
+    if self.start_note:
+        self.notes.append(NoteObj(self.note_id, channel, velocity, lin_map_vel, \
+        self.spd, self.is_sustain, self.width, self.col1, self.col2, offset))
+    else:
+        self.notes[-1].stop_growing(offset)
+    self.start_note = not self.start_note
+```  
 
 Each ```NoteObj``` falls at a certain speed, and has a certain color calculated according to the ```velocity``` of the note that has been linearly mapped.
 ```python
