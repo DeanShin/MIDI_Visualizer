@@ -179,7 +179,8 @@ Thus when a note needs to be spawned, only the bare amount of inputs are needed.
 Whenever a note_on or note_off type message is read, the `NotePath` corresponding with the `note` value of the MIDI message has the function `toggle_note()` called.  
 ```python
 if msg.type == 'note_on' or msg.type == 'note_off':
-    #A0 (note_path[1]) is msg.note == 21
+    # A0 (note_path[1]) is msg.note == 21
+    # Therefore in order to reference the correct note_path, the equation becomes msg.note + 1 - 21.
     note_paths[msg.note + 1 - 21].toggle_note(msg.channel, msg.velocity, \
     lin_map_vel(msg.velocity), int((current_time - next_msg_time) / frame_length * spd))
 ```  
@@ -209,3 +210,53 @@ def __init__(lin_map_vel, col1, col2):
     int(col1[1] + lin_map_vel * (col2[1] - col1[1])), \
     int(col1[2] + lin_map_vel * (col2[2] - col1[2])))
 ```  
+As we are reading through the messages in real time, we do not know how long the note is going to be held when we initialize the `NoteObj`. Consequently, we cannot pre-determine the height of the `NoteObj` and have the Object start off-screen. 
+
+What we can do, however, is (while the note is being played) have the `NoteObj`'s height increase:
+
+```python
+def update(self):
+    if self.growing:
+        self.height += self.change_y
+```  
+
+This creates the illusion that the `NoteObj` is falling, when, in fact, it is simply increasing in height.
+
+When the note is released (when the second note_on message is received), we stop the note from increasing in height and instead change the object's y value:
+
+```python
+def update(self):
+    if self.growing:
+        self.height += self.change_y
+    else:
+        self.y += self.change_y
+```
+
+That covers the first half of the note, however what about the latter half?
+
+```python
+def update(self, pygame, window, player):
+    if self.deleteNote:
+        self.deleteNote = False
+        del(self.notes[0])
+    for i in self.notes:
+        if i.y + i.height >= self.piano_y_pos and not i.shrinking:
+            i.start_shrinking() 
+        if i.y >= self.piano_y_pos:
+            self.deleteNote = True
+```  
+
+Here, there are two main phases as well:
+
+When the bottom of the note comes into contact with the piano keyboard, we want the note to shrink, hence `i.start_shrinking()`
+When the `shrinking` boolean is True, the note, in addition to moving downwards every frame, reduces in height.
+
+```python
+def update(self):
+    if self.growing:
+        self.height += self.change_y
+    else:
+        self.y += self.change_y
+        if self.shrinking:
+            self.height -= self.change_y
+```
