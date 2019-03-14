@@ -64,7 +64,33 @@ The first line, ```mid = mido.MidiFile(pathToMidi)```, makes ```MidiFile``` obje
 
 ![phase1](/examples/screenshots/phase1.png)  
 
-(Note: there are several types of messages, the largest sub-divisions being ```messages``` and ```meta_messages```, ```meta_messages``` hold special information such as when the pedal turns on/off, or lyrics, or the name of an instrument; therefore the ```mid.play()``` function by default does not output ```meta_messages```.)  
+There are several types of messages, the largest sub-divisions being ```messages``` and ```meta_messages```, ```meta_messages``` hold special information such as when the pedal turns on/off, or lyrics, or the name of an instrument; therefore the ```mid.play()``` function by default does not output ```meta_messages```.  
+
+While there are many types of messages and meta_messages, the two most common are `note_on` and `note_off`. Every `note_on` and `note_off` message has 5 variables: `type`, `channel`, `note`, `velocity`, and `time`.
+
+Example messages:  
+```
+note_on channel=0 note=90 velocity=80 time=0.03125
+control_change channel=0 control=64 value=127 time=0.05
+```  
+a note_on type message:  
+```python
+type=note_on    # the type of the message
+channel=0       # analagous with TV or radio channels
+note=90         # the pitch of a note, where note=60 equals middle C
+velocity=80     # affects the loudness and timbre of a note, basically, how hard a note is played
+time=0.03125    # how many seconds have passed since the last message
+```  
+a control_change type message:  
+```python
+type=control_change
+channel=0
+control=64      # what function to perform: i.e. control=64 signifies that the sustain pedal should be sent a value
+value=127       # what value to send
+time=0.05
+```
+
+Strangely, many MIDI files do not utilize the ```note_off``` type message. Instead, two ```note_on``` type messages are sent--the first one signifies the start of the note, the second one signifies the end. In this system, you can not activate a note that is already activated.  
 
 With a couple (read: _lots_) of `if` statements, you can easily separate all message types into performing unique functions:
 ```python
@@ -118,35 +144,11 @@ The majority of my visualizer is comprised of rectangles, so ```pygame.draw.rect
 
 ## Structure  
 
-While there are many types of messages and meta_messages, the two most common are `note_on` and `note_off`. Every `note_on` and `note_off` message has 5 variables: `type`, `channel`, `note`, `velocity`, and `time`.
+With all of this information, as there are notable 'objects' (i.e. piano keys, piano notes) to be programmed, I decided to make my program object-oriented. 
 
-Example messages:  
-```
-note_on channel=0 note=90 velocity=80 time=0.03125
-control_change channel=0 control=64 value=127 time=0.05
-```  
-a note_on type message:  
-```python
-type=note_on    # the type of the message
-channel=0       # analagous with TV or radio channels
-note=90         # the pitch of a note, where note=60 equals middle C
-velocity=80     # affects the loudness and timbre of a note, basically, how hard a note is played
-time=0.03125    # how many seconds have passed since the last message
-```  
-a control_change type message:  
-```python
-type=control_change
-channel=0
-control=64      # what function to perform: i.e. control=64 signifies that the sustain pedal should be sent a value
-value=127       # what value to send
-time=0.05
-```
+As mentioned above, there are two obvious classes that I should implement: `PianoRollObj`, the piano roll, and the falling notes being the other. However, we can simplify things further--as notes (at least in my program) do not change in pitch, there are distinct vertical 'paths' that these notes follow--beginning from the top of the screen, and ending at the piano keyboard, notes follow _note paths_, (vertical lines with a constant x value) until they collide with the piano keyboard and get played.
 
-Strangely, many MIDI files do not utilize the ```note_off``` type message. Instead, two ```note_on``` type messages are sent--the first one signifies the start of the note, the second one signifies the end. In this system, you can not activate a note that is already activated.  
-
-With all of this information, I decided to sort my program into NotePaths.
-
-A NotePath consists of one piano key and the notes that fall onto it. As there are 88 keys on your standard piano, (plus one for the sustain pedal) there are 89 NotePath objects in the array ```note_paths[]```.
+A NotePath consists of one piano key and an array of the notes that fall onto it `notes[]`. As there are 88 keys on your standard piano, (plus one for the sustain pedal) there are 89 NotePath objects in the array ```note_paths[]```.
 ```python
 i = 0
 note_paths = []
